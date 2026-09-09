@@ -58,9 +58,16 @@
                     }
                     else
                     {
-                        <span class="badge bg-secondary">
-                            Desactivada
-                        </span>
+                        <form asp-action="Reactivate"
+                              asp-route-id="@category.Id"
+                              method="post"
+                              class="d-inline">
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-success">
+                                Reactivar
+                            </button>
+                        </form>
                     }
                 </td>
             </tr>

@@ -113,4 +113,22 @@ public class CategoriesController : Controller
 
         return RedirectToAction(nameof(Index));
     }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Reactivate(int id)
+    {
+        var category = await _context.Categories.FindAsync(id);
+
+        if (category == null)
+        {
+            return NotFound();
+        }
+
+        category.IsActive = true;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
 }
