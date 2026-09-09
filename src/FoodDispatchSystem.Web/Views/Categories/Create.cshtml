@@ -1,0 +1,53 @@
+﻿@model FoodDispatchSystem.Web.Models.Category
+
+@{
+    ViewData["Title"] = "Nueva categoría";
+}
+
+<h1>Nueva categoría</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+
+        <form asp-action="Create" method="post">
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label">Nombre</label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Descripción</label>
+                <textarea asp-for="Description"
+                          class="form-control"
+                          rows="3"></textarea>
+                <span asp-validation-for="Description"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="form-check mb-3">
+                <input asp-for="IsActive"
+                       class="form-check-input" />
+                <label asp-for="IsActive"
+                       class="form-check-label">
+                    Activa
+                </label>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-primary">
+                Guardar
+            </button>
+
+            <a asp-action="Index"
+               class="btn btn-secondary">
+                Cancelar
+            </a>
+
+        </form>
+
+    </div>
+</div>

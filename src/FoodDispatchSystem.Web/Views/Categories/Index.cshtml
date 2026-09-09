@@ -1,0 +1,69 @@
+﻿@model IEnumerable<FoodDispatchSystem.Web.Models.Category>
+
+@{
+    ViewData["Title"] = "Categorías";
+}
+
+<h1>Categorías</h1>
+
+<p>
+    Aquí se mostrarán las categorías disponibles del menú.
+</p>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">
+        Nueva categoría
+    </a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var category in Model)
+        {
+            <tr>
+                <td>@category.Name</td>
+                <td>@category.Description</td>
+                <td>
+                    @if (category.IsActive)
+                    {
+                        <span>Activa</span>
+                    }
+                    else
+                    {
+                        <span>Inactiva</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@category.Id"
+                       class="btn btn-sm btn-warning">
+                        Editar
+                    </a>
+
+                    @if (category.IsActive)
+                    {
+                        <a asp-action="Delete"
+                           asp-route-id="@category.Id"
+                           class="btn btn-sm btn-danger">
+                            Desactivar
+                        </a>
+                    }
+                    else
+                    {
+                        <span class="badge bg-secondary">
+                            Desactivada
+                        </span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
