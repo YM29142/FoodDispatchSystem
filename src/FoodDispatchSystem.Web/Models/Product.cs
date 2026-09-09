@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodDispatchSystem.Web.Models;
 
-public class Category
+public class Product
 {
     public int Id { get; set; }
 
@@ -13,7 +14,14 @@ public class Category
     [StringLength(250)]
     public string? Description { get; set; }
 
+    [Required]
+    [Range(typeof(decimal), "0.01", "99999.99")]
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal Price { get; set; }
+
     public bool IsActive { get; set; } = true;
 
-    public ICollection<Product> Products { get; set; } = new List<Product>();
+    public int CategoryId { get; set; }
+
+    public Category Category { get; set; } = null!;
 }
