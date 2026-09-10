@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FoodDispatchSystem.Web.Models;
@@ -15,7 +16,7 @@ public class Product
     public string? Description { get; set; }
 
     [Required]
-    [Range(typeof(decimal), "0.01", "99999.99")]
+    [Range(0.01, 99999.99, ErrorMessage = "El precio debe ser mayor que 0.")]
     [Column(TypeName = "decimal(10,2)")]
     public decimal Price { get; set; }
 
@@ -23,5 +24,6 @@ public class Product
 
     public int CategoryId { get; set; }
 
+    [ValidateNever]
     public Category Category { get; set; } = null!;
 }

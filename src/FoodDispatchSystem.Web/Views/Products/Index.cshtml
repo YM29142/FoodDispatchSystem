@@ -1,0 +1,52 @@
+﻿@model IEnumerable<FoodDispatchSystem.Web.Models.Product>
+
+@{
+    ViewData["Title"] = "Productos";
+}
+
+<h1>Productos</h1>
+
+<p>
+    Aquí se mostrarán los productos disponibles del menú.
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th>Categoría</th>
+            <th>Precio</th>
+            <th>Estado</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var product in Model)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+
+                <td>
+                    @product.Category.Name
+                </td>
+
+                <td>
+                    $@product.Price.ToString("0.00")
+                </td>
+
+                <td>
+                    @if (product.IsActive)
+                    {
+                        <span>Activo</span>
+                    }
+                    else
+                    {
+                        <span>Inactivo</span>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
