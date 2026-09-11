@@ -1,0 +1,73 @@
+﻿@model FoodDispatchSystem.Web.Models.Product
+
+@{
+    ViewData["Title"] = "Desactivar producto";
+}
+
+<h1>Desactivar producto</h1>
+
+<hr />
+
+<div class="alert alert-warning">
+    ¿Está seguro de que desea desactivar este producto?
+</div>
+
+<dl class="row">
+    <dt class="col-sm-2">
+        Nombre
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Name
+    </dd>
+
+    <dt class="col-sm-2">
+        Descripción
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Description
+    </dd>
+
+    <dt class="col-sm-2">
+        Categoría
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Category.Name
+    </dd>
+
+    <dt class="col-sm-2">
+        Precio
+    </dt>
+    <dd class="col-sm-10">
+        @Model.Price.ToString("C")
+    </dd>
+
+    <dt class="col-sm-2">
+        Estado actual
+    </dt>
+    <dd class="col-sm-10">
+        @if (Model.IsActive)
+        {
+            <span>Activo</span>
+        }
+        else
+        {
+            <span>Inactivo</span>
+        }
+    </dd>
+</dl>
+
+<form asp-action="Delete" method="post">
+
+    <input type="hidden" asp-for="Id" />
+
+    <button type="submit"
+            class="btn btn-danger">
+        Confirmar desactivación
+    </button>
+
+    <a asp-action="Index"
+       class="btn btn-secondary">
+        Cancelar
+    </a>
+
+</form>

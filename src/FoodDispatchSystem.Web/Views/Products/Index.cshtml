@@ -10,6 +10,13 @@
     Aquí se mostrarán los productos disponibles del menú.
 </p>
 
+<p>
+    <a asp-action="Create"
+       class="btn btn-primary">
+        Nuevo producto
+    </a>
+</p>
+
 <table class="table">
     <thead>
         <tr>
@@ -18,6 +25,7 @@
             <th>Categoría</th>
             <th>Precio</th>
             <th>Estado</th>
+            <th>Acciones</th>
         </tr>
     </thead>
 
@@ -44,6 +52,35 @@
                     else
                     {
                         <span>Inactivo</span>
+                    }
+                </td>
+                <td>
+                    <a asp-action="Edit"
+                       asp-route-id="@product.Id"
+                       class="btn btn-sm btn-warning">
+                        Editar
+                    </a>
+
+                    @if (product.IsActive)
+                    {
+                        <a asp-action="Delete"
+                           asp-route-id="@product.Id"
+                           class="btn btn-sm btn-danger">
+                            Desactivar
+                        </a>
+                    }
+                    else
+                    {
+                        <form asp-action="Reactivate"
+                              asp-route-id="@product.Id"
+                              method="post"
+                              class="d-inline">
+
+                            <button type="submit"
+                                    class="btn btn-sm btn-success">
+                                Reactivar
+                            </button>
+                        </form>
                     }
                 </td>
             </tr>
