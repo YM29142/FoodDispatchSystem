@@ -1,0 +1,246 @@
+﻿@model FoodDispatchSystem.Web.ViewModels.OrderCreateViewModel
+@using FoodDispatchSystem.Web.Models
+
+@{
+    ViewData["Title"] = "Nuevo pedido";
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    var products = ViewBag.Products as List<Product>
+        ?? new List<Product>();
+}
+
+<h1>Nuevo pedido</h1>
+
+<hr />
+
+<form asp-action="Create" method="post">
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger">
+    </div>
+
+    <div id="items-container">
+
+        @for (int i = 0; i < Model.Items.Count; i++)
+        {
+            <div class="row mb-3 order-item">
+
+                <div class="col-md-6">
+                    <label class="form-label">
+                        Producto
+                    </label>
+
+                    <select asp-for="Items[i].ProductId"
+                            class="form-select product-select">
+
+                        <option value="">
+                            Seleccione un producto
+                        </option>
+
+                        @foreach (var product in products)
+                        {
+                            <option value="@product.Id">
+                                @product.Name - @product.Price.ToString("C")
+                            </option>
+                        }
+
+                    </select>
+
+                    <span asp-validation-for="Items[i].ProductId"
+                          class="text-danger product-validation">
+                    </span>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">
+                        Cantidad
+                    </label>
+
+                    <input asp-for="Items[i].Quantity"
+                           type="number"
+                           min="1"
+                           max="100"
+                           class="form-control quantity-input" />
+
+                    <span asp-validation-for="Items[i].Quantity"
+                          class="text-danger quantity-validation">
+                    </span>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-center pt-4">
+                    <button type="button"
+                            class="btn btn-outline-danger remove-item d-none">
+                        Quitar
+                    </button>
+                </div>
+
+            </div>
+        }
+
+    </div>
+
+    
+    <div class="d-flex gap-2 mt-3">
+
+        <button type="button"
+                id="add-item"
+                class="btn btn-success">
+            + Agregar producto
+        </button>
+
+        <button type="submit"
+                class="btn btn-primary">
+            Crear pedido
+        </button>
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-secondary">
+            Cancelar
+        </a>
+
+    </div>
+    
+
+</form>
+<script>
+    const container = document.getElementById("items-container");
+
+    function reindexItems() {
+
+        const items = container.querySelectorAll(".order-item");
+
+        items.forEach((item, index) => {
+
+            const select = item.querySelector(".product-select");
+            const quantity = item.querySelector(".quantity-input");
+
+            const productValidation =
+                item.querySelector(".product-validation");
+
+            const quantityValidation =
+                item.querySelector(".quantity-validation");
+
+            const removeButton =
+                item.querySelector(".remove-item");
+
+            select.name = `Items[${index}].ProductId`;
+            select.id = `Items_${index}__ProductId`;
+
+            quantity.name = `Items[${index}].Quantity`;
+            quantity.id = `Items_${index}__Quantity`;
+
+            if (productValidation) {
+                productValidation.setAttribute(
+                    "data-valmsg-for",
+                    `Items[${index}].ProductId`
+                );
+            }
+
+            if (quantityValidation) {
+                quantityValidation.setAttribute(
+                    "data-valmsg-for",
+                    `Items[${index}].Quantity`
+                );
+            }
+
+            if (items.length === 1) {
+                removeButton.classList.add("d-none");
+            }
+            else {
+                removeButton.classList.remove("d-none");
+            }
+        });
+    }
+
+
+    document.getElementById("add-item")
+        .addEventListener("click", function() {
+
+            const items =
+                container.querySelectorAll(".order-item");
+
+            const lastItem =
+                items[items.length - 1];
+
+            const lastSelect =
+                lastItem.querySelector(".product-select");
+
+            const lastQuantity =
+                lastItem.querySelector(".quantity-input");
+
+            if (lastSelect.value === "") {
+                alert("Primero seleccione un producto.");
+                lastSelect.focus();
+                return;
+            }
+
+            const quantityValue =
+                parseInt(lastQuantity.value);
+
+            if (
+                Number.isNaN(quantityValue) ||
+                quantityValue < 1 ||
+                quantityValue > 100
+            ) {
+                alert("La cantidad debe estar entre 1 y 100.");
+                lastQuantity.focus();
+                return;
+            }
+
+            const newItem =
+                items[0].cloneNode(true);
+
+            const select =
+                newItem.querySelector(".product-select");
+
+            const quantity =
+                newItem.querySelector(".quantity-input");
+
+            select.value = "";
+            quantity.value = 1;
+
+            newItem
+                .querySelectorAll(".text-danger")
+                .forEach(span => {
+                    span.innerHTML = "";
+                });
+
+            container.appendChild(newItem);
+
+            reindexItems();
+        });
+
+
+    container.addEventListener("click", function(event) {
+
+        const removeButton =
+            event.target.closest(".remove-item");
+
+        if (!removeButton) {
+            return;
+        }
+
+        const items =
+            container.querySelectorAll(".order-item");
+
+        if (items.length === 1) {
+            return;
+        }
+
+        removeButton
+            .closest(".order-item")
+            .remove();
+
+        reindexItems();
+    });
+
+
+    reindexItems();
+</script>

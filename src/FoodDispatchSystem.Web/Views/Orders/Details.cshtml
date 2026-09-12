@@ -1,0 +1,98 @@
+﻿@model FoodDispatchSystem.Web.Models.Order
+@using FoodDispatchSystem.Web.Models
+
+@{
+    ViewData["Title"] = "Detalle del pedido";
+}
+
+<h1>Detalle del pedido</h1>
+
+<hr />
+
+<div class="mb-4">
+    <h4>@Model.OrderNumber</h4>
+
+    <p>
+        <strong>Fecha:</strong>
+        @Model.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+    </p>
+
+    <p>
+        <strong>Estado:</strong>
+
+        @switch (Model.Status)
+        {
+            case OrderStatus.Pending:
+                <span class="badge bg-warning text-dark">
+                    Pendiente
+                </span>
+                break;
+
+            case OrderStatus.Preparing:
+                <span class="badge bg-primary">
+                    Preparando
+                </span>
+                break;
+
+            case OrderStatus.Ready:
+                <span class="badge bg-info text-dark">
+                    Listo
+                </span>
+                break;
+
+            case OrderStatus.Delivered:
+                <span class="badge bg-success">
+                    Entregado
+                </span>
+                break;
+
+            case OrderStatus.Cancelled:
+                <span class="badge bg-danger">
+                    Cancelado
+                </span>
+                break;
+        }
+    </p>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Subtotal</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var detail in Model.OrderDetails)
+        {
+            <tr>
+                <td>@detail.Product.Name</td>
+
+                <td>@detail.Quantity</td>
+
+                <td>
+                    @detail.UnitPrice.ToString("C")
+                </td>
+
+                <td>
+                    @detail.Subtotal.ToString("C")
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="text-end">
+    <h4>
+        Total:
+        @Model.Total.ToString("C")
+    </h4>
+</div>
+
+<a asp-action="Index"
+   class="btn btn-secondary">
+    Volver a pedidos
+</a>

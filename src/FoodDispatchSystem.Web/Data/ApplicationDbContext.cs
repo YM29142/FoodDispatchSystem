@@ -24,5 +24,30 @@ public class ApplicationDbContext : DbContext
             .WithMany(c => c.Products)
             .HasForeignKey(p => p.CategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Order>()
+            .HasIndex(o => o.OrderNumber)
+            .IsUnique();
+
+        modelBuilder.Entity<OrderDetail>()
+            .HasOne(od => od.Order)
+            .WithMany(o => o.OrderDetails)
+            .HasForeignKey(od => od.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OrderDetail>()
+            .HasOne(od => od.Product)
+            .WithMany()
+            .HasForeignKey(od => od.ProductId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<OrderDetail>()
+            .ToTable(table =>
+                table.HasCheckConstraint(
+                    "CK_OrderDetails_Quantity",
+                    "[Quantity] >= 1 AND [Quantity] <= 100"));
     }
+
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
 }

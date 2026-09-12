@@ -1,0 +1,93 @@
+﻿@model IEnumerable<FoodDispatchSystem.Web.Models.Order>
+@using FoodDispatchSystem.Web.Models
+
+@{
+    ViewData["Title"] = "Pedidos";
+}
+
+<h1>Pedidos</h1>
+
+<p>
+    <a asp-action="Create"
+       class="btn btn-primary">
+        Nuevo pedido
+    </a>
+</p>
+
+<table class="table table-striped align-middle">
+    <thead>
+        <tr>
+            <th>Acciones</th>
+            <th>Pedido</th>
+            <th>Fecha y hora</th>
+            <th>Productos</th>
+            <th>Estado</th>
+            <th>Total</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>
+                    <strong>@order.OrderNumber</strong>
+                </td>
+
+                <td>
+                    @order.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+                </td>
+
+                <td>
+                    @order.OrderDetails.Sum(d => d.Quantity)
+                </td>
+
+                <td>
+                    @switch (order.Status)
+                    {
+                        case OrderStatus.Pending:
+                            <span class="badge bg-warning text-dark">
+                                Pendiente
+                            </span>
+                            break;
+
+                        case OrderStatus.Preparing:
+                            <span class="badge bg-primary">
+                                Preparando
+                            </span>
+                            break;
+
+                        case OrderStatus.Ready:
+                            <span class="badge bg-info text-dark">
+                                Listo
+                            </span>
+                            break;
+
+                        case OrderStatus.Delivered:
+                            <span class="badge bg-success">
+                                Entregado
+                            </span>
+                            break;
+
+                        case OrderStatus.Cancelled:
+                            <span class="badge bg-danger">
+                                Cancelado
+                            </span>
+                            break;
+                    }
+                </td>
+
+                <td>
+                    @order.Total.ToString("C")
+                    <td>
+                        <a asp-action="Details"
+                           asp-route-id="@order.Id"
+                           class="btn btn-sm btn-info">
+                            Ver detalle
+                        </a>
+                </td>
+                
+            </tr>
+        }
+    </tbody>
+</table>
