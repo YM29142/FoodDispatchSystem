@@ -14,13 +14,36 @@ public class OrdersController : Controller
         _context = context;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+      OrderStatus? status,
+      bool today = false)
     {
-        var orders = await _context.Orders
+        var query = _context.Orders
             .Include(o => o.OrderDetails)
                 .ThenInclude(od => od.Product)
+            .AsQueryable();
+
+        if (status.HasValue)
+        {
+            query = query.Where(o => o.Status == status.Value);
+        }
+
+        if (today)
+        {
+            var startOfToday = DateTime.Today;
+            var startOfTomorrow = startOfToday.AddDays(1);
+
+            query = query.Where(o =>
+                o.CreatedAt >= startOfToday &&
+                o.CreatedAt < startOfTomorrow);
+        }
+
+        var orders = await query
             .OrderByDescending(o => o.CreatedAt)
             .ToListAsync();
+
+        ViewBag.SelectedStatus = status;
+        ViewBag.TodayFilter = today;
 
         return View(orders);
     }

@@ -1,14 +1,64 @@
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+using FoodDispatchSystem.Web.Data;
 using FoodDispatchSystem.Web.Models;
+using FoodDispatchSystem.Web.ViewModels;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace FoodDispatchSystem.Web.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly ILogger<HomeController> _logger;
+    private readonly ApplicationDbContext _context;
+
+    public HomeController(
+        ILogger<HomeController> logger,
+        ApplicationDbContext context)
     {
-        return View();
+        _logger = logger;
+        _context = context;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        var today = DateTime.Today;
+        var tomorrow = today.AddDays(1);
+
+        var model = new DashboardViewModel
+        {
+            OrdersToday = await _context.Orders
+                .CountAsync(o =>
+                    o.CreatedAt >= today &&
+                    o.CreatedAt < tomorrow),
+
+            PendingOrders = await _context.Orders
+                .CountAsync(o =>
+                    o.Status == OrderStatus.Pending),
+
+            PreparingOrders = await _context.Orders
+                .CountAsync(o =>
+                    o.Status == OrderStatus.Preparing),
+
+            ReadyOrders = await _context.Orders
+                .CountAsync(o =>
+                    o.Status == OrderStatus.Ready),
+
+            DeliveredToday = await _context.Orders
+                .CountAsync(o =>
+                    o.Status == OrderStatus.Delivered &&
+                    o.CreatedAt >= today &&
+                    o.CreatedAt < tomorrow),
+
+            DeliveredTotalToday = await _context.Orders
+                .Where(o =>
+                    o.Status == OrderStatus.Delivered &&
+                    o.CreatedAt >= today &&
+                    o.CreatedAt < tomorrow)
+                .SumAsync(o => (decimal?)o.Total) ?? 0
+        };
+
+        return View(model);
     }
 
     public IActionResult Privacy()
@@ -16,9 +66,16 @@ public class HomeController : Controller
         return View();
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+    [ResponseCache(
+        Duration = 0,
+        Location = ResponseCacheLocation.None,
+        NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return View(new ErrorViewModel
+        {
+            RequestId = Activity.Current?.Id
+                ?? HttpContext.TraceIdentifier
+        });
     }
 }
