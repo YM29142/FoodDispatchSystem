@@ -153,4 +153,56 @@ public class OrdersController : Controller
 
         return View(order);
     }
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateStatus(
+     int id,
+     OrderStatus status)
+    {
+        var order = await _context.Orders.FindAsync(id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        if (!Enum.IsDefined(typeof(OrderStatus), status))
+        {
+            return BadRequest();
+        }
+
+        var validTransition = order.Status switch
+        {
+            OrderStatus.Pending =>
+                status == OrderStatus.Preparing ||
+                status == OrderStatus.Cancelled,
+
+            OrderStatus.Preparing =>
+                status == OrderStatus.Ready ||
+                status == OrderStatus.Cancelled,
+
+            OrderStatus.Ready =>
+                status == OrderStatus.Delivered,
+
+            OrderStatus.Delivered => false,
+
+            OrderStatus.Cancelled => false,
+
+            _ => false
+        };
+
+        if (!validTransition)
+        {
+            TempData["ErrorMessage"] =
+                "El cambio de estado solicitado no está permitido.";
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        order.Status = status;
+
+        await _context.SaveChangesAsync();
+
+        return RedirectToAction(nameof(Index));
+    }
 }

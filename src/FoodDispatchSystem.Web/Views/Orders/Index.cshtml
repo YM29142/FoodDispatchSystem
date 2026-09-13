@@ -7,6 +7,13 @@
 
 <h1>Pedidos</h1>
 
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
 <p>
     <a asp-action="Create"
        class="btn btn-primary">
@@ -17,14 +24,15 @@
 <table class="table table-striped align-middle">
     <thead>
         <tr>
-            <th>Acciones</th>
             <th>Pedido</th>
             <th>Fecha y hora</th>
             <th>Productos</th>
             <th>Estado</th>
             <th>Total</th>
+            <th>Acciones</th>
         </tr>
     </thead>
+  
 
     <tbody>
         @foreach (var order in Model)
@@ -79,13 +87,98 @@
 
                 <td>
                     @order.Total.ToString("C")
-                    <td>
-                        <a asp-action="Details"
-                           asp-route-id="@order.Id"
-                           class="btn btn-sm btn-info">
-                            Ver detalle
-                        </a>
-                </td>
+                   <td>
+    <a asp-action="Details"
+       asp-route-id="@order.Id"
+       class="btn btn-sm btn-info">
+        Ver detalle
+    </a>
+
+    @if (order.Status == OrderStatus.Pending)
+    {
+        <form asp-action="UpdateStatus"
+              asp-route-id="@order.Id"
+              method="post"
+              class="d-inline">
+
+            <input type="hidden"
+                   name="status"
+                   value="@((int)OrderStatus.Preparing)" />
+
+            <button type="submit"
+                    class="btn btn-sm btn-primary">
+                Preparar
+            </button>
+        </form>
+
+        <form asp-action="UpdateStatus"
+              asp-route-id="@order.Id"
+              method="post"
+              class="d-inline">
+
+            <input type="hidden"
+                   name="status"
+                   value="@((int)OrderStatus.Cancelled)" />
+
+            <button type="submit"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('¿Está seguro de cancelar este pedido?');">
+                Cancelar
+            </button>
+        </form>
+    }
+    else if (order.Status == OrderStatus.Preparing)
+    {
+        <form asp-action="UpdateStatus"
+              asp-route-id="@order.Id"
+              method="post"
+              class="d-inline">
+
+            <input type="hidden"
+                   name="status"
+                   value="@((int)OrderStatus.Ready)" />
+
+            <button type="submit"
+                    class="btn btn-sm btn-success">
+                Marcar listo
+            </button>
+        </form>
+
+        <form asp-action="UpdateStatus"
+              asp-route-id="@order.Id"
+              method="post"
+              class="d-inline">
+
+            <input type="hidden"
+                   name="status"
+                   value="@((int)OrderStatus.Cancelled)" />
+
+            <button type="submit"
+                    class="btn btn-sm btn-danger"
+                    onclick="return confirm('¿Está seguro de cancelar este pedido?');">
+                Cancelar
+            </button>
+        </form>
+    }
+    else if (order.Status == OrderStatus.Ready)
+    {
+        <form asp-action="UpdateStatus"
+              asp-route-id="@order.Id"
+              method="post"
+              class="d-inline">
+
+            <input type="hidden"
+                   name="status"
+                   value="@((int)OrderStatus.Delivered)" />
+
+            <button type="submit"
+                    class="btn btn-sm btn-success">
+                Entregar
+            </button>
+        </form>
+    }
+</td>
+                
                 
             </tr>
         }
