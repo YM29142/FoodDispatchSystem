@@ -4,8 +4,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FoodDispatchSystem.Web.Models;
 namespace FoodDispatchSystem.Web.Controllers;
+using Microsoft.AspNetCore.Authorization;
 
+[Authorize]
 public class OrdersController : Controller
+
 {
     private readonly ApplicationDbContext _context;
 

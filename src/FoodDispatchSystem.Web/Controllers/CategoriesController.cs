@@ -2,9 +2,11 @@
 using FoodDispatchSystem.Web.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 namespace FoodDispatchSystem.Web.Controllers;
 
+[Authorize(Roles = "Administrador")]
 public class CategoriesController : Controller
 {
     private readonly ApplicationDbContext _context;
