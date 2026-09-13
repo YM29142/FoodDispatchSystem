@@ -55,7 +55,14 @@ public class HomeController : Controller
                     o.Status == OrderStatus.Delivered &&
                     o.CreatedAt >= today &&
                     o.CreatedAt < tomorrow)
-                .SumAsync(o => (decimal?)o.Total) ?? 0
+                .SumAsync(o => (decimal?)o.Total) ?? 0,
+
+
+                RecentOrders = await _context.Orders
+    .Include(o => o.OrderDetails)
+    .OrderByDescending(o => o.CreatedAt)
+    .Take(5)
+    .ToListAsync()
         };
 
         return View(model);

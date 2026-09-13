@@ -1,4 +1,5 @@
-﻿namespace FoodDispatchSystem.Web.ViewModels;
+﻿using FoodDispatchSystem.Web.Models;
+namespace FoodDispatchSystem.Web.ViewModels;
 
 public class DashboardViewModel
 {
@@ -13,4 +14,7 @@ public class DashboardViewModel
     public int DeliveredToday { get; set; }
 
     public decimal DeliveredTotalToday { get; set; }
+
+    public List<Order> RecentOrders { get; set; }
+    = new List<Order>();
 }
