@@ -89,4 +89,11 @@ public class AccountController : Controller
 
         return RedirectToAction(nameof(Login));
     }
+    [AllowAnonymous]
+    public IActionResult AccessDenied(string? returnUrl = null)
+    {
+        ViewData["ReturnUrl"] = returnUrl;
+
+        return View();
+    }
 }

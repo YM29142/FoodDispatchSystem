@@ -149,30 +149,40 @@
 </h4>
 
 <div class="d-flex flex-wrap gap-2">
+    <div class="d-flex gap-2 flex-wrap">
 
-    <a asp-controller="Orders"
-       asp-action="Create"
-       class="btn btn-primary">
-        Nuevo pedido
-    </a>
+        @if (User.IsInRole("Administrador") ||
+      User.IsInRole("Cajero"))
+        {
+            <a asp-controller="Orders"
+               asp-action="Create"
+               class="btn btn-primary">
+                Nuevo pedido
+            </a>
+        }
 
-    <a asp-controller="Orders"
-       asp-action="Index"
-       class="btn btn-info">
-        Pedidos
-    </a>
+        <a asp-controller="Orders"
+           asp-action="Index"
+           class="btn btn-info">
+            Pedidos
+        </a>
 
-    <a asp-controller="Products"
-       asp-action="Index"
-       class="btn btn-warning">
-        Productos
-    </a>
+        @if (User.IsInRole("Administrador"))
+        {
+            <a asp-controller="Products"
+               asp-action="Index"
+               class="btn btn-warning">
+                Productos
+            </a>
 
-    <a asp-controller="Categories"
-       asp-action="Index"
-       class="btn btn-secondary">
-        Categorías
-    </a>
+            <a asp-controller="Categories"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Categorías
+            </a>
+        }
+
+    </div>
 
 </div>
 

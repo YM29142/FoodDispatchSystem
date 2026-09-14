@@ -33,6 +33,9 @@ builder.Services
 var app = builder.Build();
 await IdentitySeeder.SeedRolesAsync(app.Services);
 await IdentitySeeder.SeedAdminAsync(app.Services);
+await IdentitySeeder.SeedCajeroAsync(app.Services);
+await IdentitySeeder.SeedCocinaAsync(app.Services);
+await IdentitySeeder.SeedDespachoAsync(app.Services);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -60,10 +60,14 @@
 }
 
 <p>
-    <a asp-action="Create"
-       class="btn btn-primary">
-        Nuevo pedido
-    </a>
+    @if (User.IsInRole("Administrador") ||
+      User.IsInRole("Cajero"))
+    {
+        <a asp-action="Create"
+           class="btn btn-primary">
+            Nuevo pedido
+        </a>
+    }
 </p>
 
 <table class="table table-striped align-middle">
@@ -130,16 +134,21 @@
                     }
                 </td>
 
-                <td>
-                    @order.Total.ToString("C")
-                   <td>
+        <td>
+    @order.Total.ToString("C")
+</td>
+
+<td>
     <a asp-action="Details"
        asp-route-id="@order.Id"
        class="btn btn-sm btn-info">
         Ver detalle
     </a>
 
-    @if (order.Status == OrderStatus.Pending)
+    @* PREPARAR: Administrador o Cocina *@
+    @if (order.Status == OrderStatus.Pending &&
+         (User.IsInRole("Administrador") ||
+          User.IsInRole("Cocina")))
     {
         <form asp-action="UpdateStatus"
               asp-route-id="@order.Id"
@@ -155,7 +164,13 @@
                 Preparar
             </button>
         </form>
+    }
 
+    @* CANCELAR: Administrador o Cajero *@
+    @if (order.Status == OrderStatus.Pending &&
+         (User.IsInRole("Administrador") ||
+          User.IsInRole("Cajero")))
+    {
         <form asp-action="UpdateStatus"
               asp-route-id="@order.Id"
               method="post"
@@ -172,7 +187,11 @@
             </button>
         </form>
     }
-    else if (order.Status == OrderStatus.Preparing)
+
+    @* MARCAR LISTO: Administrador o Cocina *@
+    @if (order.Status == OrderStatus.Preparing &&
+         (User.IsInRole("Administrador") ||
+          User.IsInRole("Cocina")))
     {
         <form asp-action="UpdateStatus"
               asp-route-id="@order.Id"
@@ -188,24 +207,12 @@
                 Marcar listo
             </button>
         </form>
-
-        <form asp-action="UpdateStatus"
-              asp-route-id="@order.Id"
-              method="post"
-              class="d-inline">
-
-            <input type="hidden"
-                   name="status"
-                   value="@((int)OrderStatus.Cancelled)" />
-
-            <button type="submit"
-                    class="btn btn-sm btn-danger"
-                    onclick="return confirm('¿Está seguro de cancelar este pedido?');">
-                Cancelar
-            </button>
-        </form>
     }
-    else if (order.Status == OrderStatus.Ready)
+
+    @* ENTREGAR: Administrador o Despacho *@
+    @if (order.Status == OrderStatus.Ready &&
+         (User.IsInRole("Administrador") ||
+          User.IsInRole("Despacho")))
     {
         <form asp-action="UpdateStatus"
               asp-route-id="@order.Id"

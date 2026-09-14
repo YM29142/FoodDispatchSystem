@@ -51,6 +51,7 @@ public class OrdersController : Controller
         return View(orders);
     }
 
+    [Authorize(Roles = "Administrador,Cajero")]
     public async Task<IActionResult> Create()
     {
         var products = await _context.Products
@@ -73,6 +74,7 @@ public class OrdersController : Controller
     }
 
     [HttpPost]
+    [Authorize(Roles = "Administrador,Cajero")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OrderCreateViewModel model)
     {
@@ -195,6 +197,27 @@ public class OrdersController : Controller
         if (!Enum.IsDefined(typeof(OrderStatus), status))
         {
             return BadRequest();
+        }
+        if (status == OrderStatus.Cancelled &&
+             !User.IsInRole("Administrador") &&
+            !User.IsInRole("Cajero"))
+        {
+            return Forbid();
+        }
+
+        if ((status == OrderStatus.Preparing ||
+             status == OrderStatus.Ready) &&
+             !User.IsInRole("Administrador") &&
+             !User.IsInRole("Cocina"))
+        {
+            return Forbid();
+        }
+
+        if (status == OrderStatus.Delivered &&
+            !User.IsInRole("Administrador") &&
+            !User.IsInRole("Despacho"))
+        {
+            return Forbid();
         }
 
         var validTransition = order.Status switch
