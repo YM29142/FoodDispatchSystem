@@ -1,9 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@inject FoodDispatchSystem.Web.Services.BusinessService BusinessService
+
+@{
+    var business = await BusinessService.GetBusinessAsync();
+    var businessName = business?.Name ?? "FoodDispatch";
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - FoodDispatch</title>
+    <title>@ViewData["Title"] - @businessName</title>
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
@@ -13,11 +20,22 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-
-                <a class="navbar-brand fw-bold"
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold"
                    asp-controller="Home"
                    asp-action="Index">
-                    FoodDispatch
+
+                    @if (!string.IsNullOrWhiteSpace(business?.LogoPath))
+                    {
+                        <img src="@business.LogoPath"
+                             alt="Logo de @businessName"
+                             style="width: 40px;
+                        height: 40px;
+                        object-fit: contain;
+                        border-radius: 8px;" />
+                    }
+
+                    <span>@businessName</span>
+
                 </a>
 
                 <button class="navbar-toggler"
@@ -68,6 +86,13 @@
                                        asp-controller="Categories"
                                        asp-action="Index">
                                         Categorías
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Business"
+                                       asp-action="Index">
+                                        Configuración
                                     </a>
                                 </li>
                             }

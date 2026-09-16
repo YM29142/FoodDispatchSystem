@@ -3,6 +3,7 @@ using FoodDispatchSystem.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using FoodDispatchSystem.Web.Models;
 using Microsoft.AspNetCore.Identity;
+using FoodDispatchSystem.Web.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var cultureInfo = new CultureInfo("en-US");
@@ -15,6 +16,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<BusinessService>();
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -32,10 +34,14 @@ builder.Services
 
 var app = builder.Build();
 await IdentitySeeder.SeedRolesAsync(app.Services);
-await IdentitySeeder.SeedAdminAsync(app.Services);
-await IdentitySeeder.SeedCajeroAsync(app.Services);
-await IdentitySeeder.SeedCocinaAsync(app.Services);
-await IdentitySeeder.SeedDespachoAsync(app.Services);
+
+if (app.Environment.IsDevelopment())
+{
+    await IdentitySeeder.SeedAdminAsync(app.Services);
+    await IdentitySeeder.SeedCajeroAsync(app.Services);
+    await IdentitySeeder.SeedCocinaAsync(app.Services);
+    await IdentitySeeder.SeedDespachoAsync(app.Services);
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -46,6 +52,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 

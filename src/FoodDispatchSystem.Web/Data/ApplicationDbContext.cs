@@ -18,6 +18,11 @@ public class ApplicationDbContext
 
     public DbSet<Product> Products { get; set; } = null!;
 
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
+
+    public DbSet<Business> Businesses { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -51,6 +56,6 @@ public class ApplicationDbContext
                     "[Quantity] >= 1 AND [Quantity] <= 100"));
     }
 
-    public DbSet<Order> Orders { get; set; } = null!;
-    public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
+
 }
+

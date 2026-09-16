@@ -1,0 +1,197 @@
+﻿@model FoodDispatchSystem.Web.ViewModels.BusinessSetupViewModel
+
+@{
+    ViewData["Title"] = "Configuración inicial";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9">
+
+            <div class="text-center mb-4">
+                <h1 class="fw-bold">Bienvenido a FoodDispatch</h1>
+
+                <p class="text-muted">
+                    Configuremos la información básica de su negocio.
+                </p>
+            </div>
+
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4 p-md-5">
+
+                    <h3 class="mb-1">
+                        Configuración del negocio
+                    </h3>
+
+                    <p class="text-muted mb-4">
+                        Esta información se utilizará para personalizar FoodDispatch.
+                    </p>
+
+                    <form asp-action="Index"
+                          asp-controller="Setup"
+                          method="post">
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Name"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Name"
+                                   class="form-control"
+                                   placeholder="Ej. Café Don Jhon" />
+
+                            <span asp-validation-for="Name"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Address"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Address"
+                                   class="form-control"
+                                   placeholder="Dirección del negocio" />
+
+                            <span asp-validation-for="Address"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="Phone"
+                                       class="form-label fw-semibold">
+                                </label>
+
+                                <input asp-for="Phone"
+                                       class="form-control"
+                                       placeholder="Ej. 2222-0000" />
+
+                                <span asp-validation-for="Phone"
+                                      class="text-danger">
+                                </span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+
+                                <label asp-for="Email"
+                                       class="form-label fw-semibold">
+                                </label>
+
+                                <input asp-for="Email"
+                                       class="form-control"
+                                       placeholder="contacto@negocio.com" />
+
+                                <span asp-validation-for="Email"
+                                      class="text-danger">
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="CurrencyCode"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <select asp-for="CurrencyCode"
+                                    class="form-select">
+                                <option value="USD">
+                                    USD - Dólar estadounidense
+                                </option>
+                            </select>
+
+                            <span asp-validation-for="CurrencyCode"
+                                  class="text-danger">
+                            </span>
+                        </div>
+                        <hr class="my-4" />
+
+                        <div class="mb-4">
+                            <h4 class="fw-semibold mb-1">
+                                Administrador inicial
+                            </h4>
+
+                            <p class="text-muted mb-0">
+                                Esta cuenta tendrá acceso completo a FoodDispatch.
+                            </p>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="AdminEmail"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="AdminEmail"
+                                   class="form-control"
+                                   autocomplete="username"
+                                   placeholder="administrador@negocio.com" />
+
+                            <span asp-validation-for="AdminEmail"
+                                  class="text-danger">
+                            </span>
+                        </div>
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="AdminPassword"
+                                       class="form-label fw-semibold">
+                                </label>
+
+                                <input asp-for="AdminPassword"
+                                       class="form-control"
+                                       autocomplete="new-password"
+                                       placeholder="Mínimo 8 caracteres" />
+
+                                <span asp-validation-for="AdminPassword"
+                                      class="text-danger">
+                                </span>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ConfirmPassword"
+                                       class="form-label fw-semibold">
+                                </label>
+
+                                <input asp-for="ConfirmPassword"
+                                       class="form-control"
+                                       autocomplete="new-password"
+                                       placeholder="Repita la contraseña" />
+
+                                <span asp-validation-for="ConfirmPassword"
+                                      class="text-danger">
+                                </span>
+                            </div>
+
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit"
+                                    class="btn btn-primary btn-lg">
+                                Crear negocio
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+            <p class="text-center text-muted mt-4 small">
+                FoodDispatch · Sistema de gestión de pedidos
+            </p>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

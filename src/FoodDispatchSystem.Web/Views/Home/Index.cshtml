@@ -1,4 +1,10 @@
-﻿@using FoodDispatchSystem.Web.Models
+﻿@inject FoodDispatchSystem.Web.Services.BusinessService BusinessService
+
+@{
+    var business = await BusinessService.GetBusinessAsync();
+    var businessName = business?.Name ?? "FoodDispatch";
+}
+@using FoodDispatchSystem.Web.Models
 @model FoodDispatchSystem.Web.ViewModels.DashboardViewModel
 
 @{
@@ -8,7 +14,7 @@
 <div class="mb-4">
     <h1>Dashboard</h1>
     <p class="text-muted">
-        Resumen general de la operación del restaurante.
+        Resumen general de @businessName.
     </p>
 </div>
 

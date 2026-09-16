@@ -1,7 +1,10 @@
-﻿@model FoodDispatchSystem.Web.ViewModels.LoginViewModel
+﻿@inject FoodDispatchSystem.Web.Services.BusinessService BusinessService
+@model FoodDispatchSystem.Web.ViewModels.LoginViewModel
 
 @{
     ViewData["Title"] = "Iniciar sesión";
+    var business = await BusinessService.GetBusinessAsync();
+    var businessName = business?.Name ?? "FoodDispatch";
 }
 
 <div class="row justify-content-center mt-5">
@@ -9,16 +12,25 @@
 
         <div class="card shadow-sm">
             <div class="card-body p-4">
-
-                <h2 class="text-center mb-2">
-                    FoodDispatch
+                @if (!string.IsNullOrWhiteSpace(business?.LogoPath))
+                {
+                    <div class="text-center mb-3">
+                        <img src="@business.LogoPath"
+                             alt="Logo de @businessName"
+                             style="width: 90px;
+                        height: 90px;
+                        object-fit: contain;
+                        border-radius: 12px;" />
+                    </div>
+                }
+                <h2 class="text-center fw-bold mb-1">
+                    @businessName
                 </h2>
 
                 <p class="text-center text-muted mb-4">
                     Iniciar sesión
                 </p>
-
-                <form asp-action="Login"
+                    <form asp-action="Login"
                       asp-controller="Account"
                       method="post">
 
@@ -73,6 +85,9 @@
                     </button>
 
                 </form>
+                <p class="text-center text-muted small mt-4 mb-0">
+                    Powered by FoodDispatch
+                </p>
 
             </div>
         </div>
