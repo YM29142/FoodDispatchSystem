@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using FoodDispatchSystem.Web.Models;
 namespace FoodDispatchSystem.Web.Controllers;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 [Authorize]
 public class OrdersController : Controller
@@ -87,11 +88,24 @@ public class OrdersController : Controller
 
             return View(model);
         }
+        var userId = User.FindFirstValue(
+    ClaimTypes.NameIdentifier);
+
+        var userEmail = User.Identity?.Name;
+
+        if (string.IsNullOrWhiteSpace(userId) ||
+            string.IsNullOrWhiteSpace(userEmail))
+        {
+            return Forbid();
+        }
         var order = new Order
         {
             OrderNumber = $"ORD-{DateTime.Now:yyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}",
             CreatedAt = DateTime.Now,
-            Status = OrderStatus.Pending
+            Status = OrderStatus.Pending,
+
+            CreatedByUserId = userId,
+            CreatedByEmail = userEmail,
         };
         decimal total = 0;
 
@@ -171,7 +185,8 @@ public class OrdersController : Controller
     {
         var order = await _context.Orders
             .Include(o => o.OrderDetails)
-                .ThenInclude(od => od.Product)
+                .ThenInclude(d => d.Product)
+            .Include(o => o.StatusHistory)
             .FirstOrDefaultAsync(o => o.Id == id);
 
         if (order == null)
@@ -181,6 +196,8 @@ public class OrdersController : Controller
 
         return View(order);
     }
+
+    
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateStatus(
@@ -247,6 +264,31 @@ public class OrdersController : Controller
 
             return RedirectToAction(nameof(Index));
         }
+
+        var previousStatus = order.Status;
+
+        var userId = User.FindFirstValue(
+            ClaimTypes.NameIdentifier);
+
+        var userEmail = User.Identity?.Name;
+
+        if (string.IsNullOrWhiteSpace(userId) ||
+            string.IsNullOrWhiteSpace(userEmail))
+        {
+            return Forbid();
+        }
+
+        var history = new OrderStatusHistory
+        {
+            OrderId = order.Id,
+            PreviousStatus = previousStatus,
+            NewStatus = status,
+            ChangedAt = DateTime.UtcNow,
+            ChangedByUserId = userId,
+            ChangedByEmail = userEmail
+        };
+
+        _context.OrderStatusHistories.Add(history);
 
         order.Status = status;
 

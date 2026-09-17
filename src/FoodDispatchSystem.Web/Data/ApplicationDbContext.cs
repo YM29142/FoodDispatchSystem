@@ -23,6 +23,7 @@ public class ApplicationDbContext
 
     public DbSet<Business> Businesses { get; set; } = null!;
 
+    public DbSet<OrderStatusHistory> OrderStatusHistories { get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -54,6 +55,29 @@ public class ApplicationDbContext
                 table.HasCheckConstraint(
                     "CK_OrderDetails_Quantity",
                     "[Quantity] >= 1 AND [Quantity] <= 100"));
+
+        modelBuilder.Entity<OrderStatusHistory>()
+     .HasOne(h => h.Order)
+     .WithMany(o => o.StatusHistory)
+     .HasForeignKey(h => h.OrderId)
+     .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<OrderStatusHistory>()
+            .Property(h => h.ChangedByUserId)
+            .HasMaxLength(450)
+            .IsRequired();
+
+        modelBuilder.Entity<OrderStatusHistory>()
+            .Property(h => h.ChangedByEmail)
+            .HasMaxLength(256)
+            .IsRequired();
+        modelBuilder.Entity<Order>()
+    .Property(o => o.CreatedByUserId)
+    .HasMaxLength(450);
+
+        modelBuilder.Entity<Order>()
+            .Property(o => o.CreatedByEmail)
+            .HasMaxLength(256);
     }
 
 

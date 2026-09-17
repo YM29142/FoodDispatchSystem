@@ -20,4 +20,11 @@ public class Order
 
     public ICollection<OrderDetail> OrderDetails { get; set; }
     = new List<OrderDetail>();
+
+    public ICollection<OrderStatusHistory> StatusHistory { get; set; }
+    = new List<OrderStatusHistory>();
+
+    public string? CreatedByUserId { get; set; }
+
+    public string? CreatedByEmail { get; set; }
 }

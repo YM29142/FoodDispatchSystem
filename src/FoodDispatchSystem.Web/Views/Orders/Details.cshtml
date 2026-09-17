@@ -1,4 +1,31 @@
 ﻿@model FoodDispatchSystem.Web.Models.Order
+@{
+    string GetStatusName(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "Pendiente",
+            OrderStatus.Preparing => "Preparando",
+            OrderStatus.Ready => "Listo",
+            OrderStatus.Delivered => "Entregado",
+            OrderStatus.Cancelled => "Cancelado",
+            _ => status.ToString()
+        };
+    }
+
+    string GetStatusBadgeClass(OrderStatus status)
+    {
+        return status switch
+        {
+            OrderStatus.Pending => "bg-warning text-dark",
+            OrderStatus.Preparing => "bg-primary",
+            OrderStatus.Ready => "bg-info text-dark",
+            OrderStatus.Delivered => "bg-success",
+            OrderStatus.Cancelled => "bg-danger",
+            _ => "bg-secondary"
+        };
+    }
+}
 @using FoodDispatchSystem.Web.Models
 
 @{
@@ -16,6 +43,24 @@
         <strong>Fecha:</strong>
         @Model.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
     </p>
+
+    @if (User.IsInRole("Administrador"))
+    {
+        <p>
+            <strong>Creado por:</strong>
+
+            @if (!string.IsNullOrWhiteSpace(Model.CreatedByEmail))
+            {
+                @Model.CreatedByEmail
+            }
+            else
+            {
+                <span class="text-muted">
+                    No disponible
+                </span>
+            }
+        </p>
+    }
 
     <p>
         <strong>Estado:</strong>
@@ -96,3 +141,83 @@
    class="btn btn-secondary">
     Volver a pedidos
 </a>
+@if (User.IsInRole("Administrador"))
+{
+    <div class="card shadow-sm border-0 mt-4">
+
+        <div class="card-body">
+
+            <h4 class="fw-bold mb-3">
+                Historial del pedido
+            </h4>
+
+            @if (Model.StatusHistory != null &&
+                 Model.StatusHistory.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>Cambio de estado</th>
+                                <th>Usuario</th>
+                                <th>Fecha y hora</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var history in
+                                Model.StatusHistory
+                                    .OrderByDescending(h => h.ChangedAt))
+                            {
+                                <tr>
+
+                                    <td>
+                                        <span class="badge @GetStatusBadgeClass(history.PreviousStatus)">
+                                            @GetStatusName(history.PreviousStatus)
+                                        </span>
+
+                                        <span class="text-muted mx-2">
+                                            →
+                                        </span>
+
+                                        <span class="badge @GetStatusBadgeClass(history.NewStatus)">
+                                            @GetStatusName(history.NewStatus)
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        @history.ChangedByEmail
+                                    </td>
+
+                                    <td>
+                                        @history.ChangedAt.ToString(
+                                            "dd/MM/yyyy HH:mm")
+                                        <span class="text-muted small">
+                                            UTC
+                                        </span>
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light border mb-0">
+                    Este pedido todavía no tiene cambios
+                    registrados en el historial.
+                </div>
+            }
+
+        </div>
+
+    </div>
+}
