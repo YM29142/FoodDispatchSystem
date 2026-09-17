@@ -128,43 +128,54 @@
 
                                     <td class="text-end pe-4">
 
-                                        @if (user.Role == "Administrador")
-                                        {
-                                            <span class="text-muted small">
-                                                Cuenta administrativa
-                                            </span>
-                                        }
-                                        else if (user.IsActive)
-                                        {
-                                            <form asp-action="Deactivate"
-                                                  asp-route-id="@user.Id"
-                                                  method="post"
-                                                  class="d-inline">
+                                        <td class="text-end pe-4">
 
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-outline-danger"
-                                                        onclick="return confirm('¿Está seguro de desactivar este empleado?');">
-                                                    Desactivar
-                                                </button>
+                                            @if (user.Role == "Administrador")
+                                            {
+                                                <span class="text-muted small">
+                                                    Cuenta administrativa
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="EditRole"
+                                                   asp-route-id="@user.Id"
+                                                   class="btn btn-sm btn-outline-primary me-1">
+                                                    Cambiar rol
+                                                </a>
 
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <form asp-action="Activate"
-                                                  asp-route-id="@user.Id"
-                                                  method="post"
-                                                  class="d-inline">
+                                                @if (user.IsActive)
+                                                {
+                                                    <form asp-action="Deactivate"
+                                                          asp-route-id="@user.Id"
+                                                          method="post"
+                                                          class="d-inline">
 
-                                                <button type="submit"
-                                                        class="btn btn-sm btn-outline-success">
-                                                    Activar
-                                                </button>
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-outline-danger"
+                                                                onclick="return confirm('¿Está seguro de desactivar este empleado?');">
+                                                            Desactivar
+                                                        </button>
 
-                                            </form>
-                                        }
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <form asp-action="Activate"
+                                                          asp-route-id="@user.Id"
+                                                          method="post"
+                                                          class="d-inline">
 
-                                    </td>
+                                                        <button type="submit"
+                                                                class="btn btn-sm btn-outline-success">
+                                                            Activar
+                                                        </button>
+
+                                                    </form>
+                                                }
+                                            }
+
+                                        </td>
 
                                 </tr>
                             }

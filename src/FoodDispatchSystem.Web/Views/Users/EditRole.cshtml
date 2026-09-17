@@ -1,0 +1,121 @@
+﻿@model FoodDispatchSystem.Web.ViewModels.UserRoleEditViewModel
+
+@{
+    ViewData["Title"] = "Cambiar rol";
+}
+
+<div class="container py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7 col-xl-6">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <div>
+                    <h1 class="fw-bold mb-1">
+                        Cambiar rol
+                    </h1>
+
+                    <p class="text-muted mb-0">
+                        Modifica el rol asignado al empleado.
+                    </p>
+                </div>
+
+                <a asp-action="Index"
+                   class="btn btn-outline-secondary">
+                    Volver
+                </a>
+
+            </div>
+
+            <div class="card shadow-sm border-0">
+
+                <div class="card-body p-4">
+
+                    <form asp-action="EditRole"
+                          method="post">
+
+                        <input asp-for="Id"
+                               type="hidden" />
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+                        <div class="mb-3">
+
+                            <label asp-for="Email"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <input asp-for="Email"
+                                   class="form-control"
+                                   readonly />
+
+                        </div>
+
+                        <div class="mb-4">
+
+                            <label asp-for="Role"
+                                   class="form-label fw-semibold">
+                            </label>
+
+                            <select asp-for="Role"
+                                    class="form-select">
+
+                                <option value="Cajero">
+                                    Cajero
+                                </option>
+
+                                <option value="Cocina">
+                                    Cocina
+                                </option>
+
+                                <option value="Despacho">
+                                    Despacho
+                                </option>
+
+                            </select>
+
+                            <span asp-validation-for="Role"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+                        <div class="alert alert-light border small">
+                            Al cambiar el rol, el empleado conservará
+                            la misma cuenta y contraseña, pero sus permisos
+                            dentro del sistema cambiarán.
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2">
+
+                            <a asp-action="Index"
+                               class="btn btn-outline-secondary">
+                                Cancelar
+                            </a>
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Guardar rol
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
