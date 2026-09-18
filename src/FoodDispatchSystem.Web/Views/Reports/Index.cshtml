@@ -1,0 +1,395 @@
+﻿@model FoodDispatchSystem.Web.ViewModels.ReportsViewModel
+
+@{
+    ViewData["Title"] = "Reportes";
+}
+
+<div class="container-fluid py-4">
+
+    <!-- TÍTULO -->
+    <div class="mb-4">
+        <h2 class="fw-bold mb-1">
+            Reportes
+        </h2>
+
+        <p class="text-muted mb-0">
+            Resumen general de pedidos y ventas del negocio.
+        </p>
+    </div>
+
+
+    <!-- FILTRO POR FECHAS -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+
+            <form method="get"
+                  asp-controller="Reports"
+                  asp-action="Index">
+
+                <div class="row g-3 align-items-end">
+
+                    <div class="col-md-4">
+                        <label for="startDate"
+                               class="form-label fw-semibold">
+                            Desde
+                        </label>
+
+                        <input type="date"
+                               id="startDate"
+                               name="startDate"
+                               class="form-control"
+                               value="@Model.StartDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label for="endDate"
+                               class="form-label fw-semibold">
+                            Hasta
+                        </label>
+
+                        <input type="date"
+                               id="endDate"
+                               name="endDate"
+                               class="form-control"
+                               value="@Model.EndDate?.ToString("yyyy-MM-dd")" />
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="d-flex gap-2">
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+                                Filtrar
+                            </button>
+
+                            <a asp-controller="Reports"
+                               asp-action="Index"
+                               class="btn btn-outline-secondary">
+                                Limpiar
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+
+    <!-- ERROR DE FECHAS -->
+    @if (ViewBag.DateError != null)
+    {
+        <div class="alert alert-danger mb-4">
+            @ViewBag.DateError
+        </div>
+    }
+
+
+    <!-- MÉTRICAS PRINCIPALES -->
+    <div class="row g-4">
+
+        <div class="col-md-6 col-xl">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Total de pedidos
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        @Model.TotalOrders
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6 col-xl">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Entregados
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        @Model.DeliveredOrders
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6 col-xl">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Cancelados
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        @Model.CancelledOrders
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6 col-xl">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Ventas entregadas
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        @Model.TotalSales.ToString("C")
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-6 col-xl">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-body">
+
+                    <p class="text-muted mb-2">
+                        Ticket promedio
+                    </p>
+
+                    <h3 class="fw-bold mb-0">
+                        @Model.AverageTicket.ToString("C")
+                    </h3>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- PRODUCTOS MÁS VENDIDOS -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+
+            <div class="mb-3">
+                <h4 class="fw-bold mb-1">
+                    Productos más vendidos
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Top 5 de productos vendidos en pedidos entregados.
+                </p>
+            </div>
+
+            @if (Model.TopProducts.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    Producto
+                                </th>
+
+                                <th class="text-center">
+                                    Cantidad vendida
+                                </th>
+
+                                <th class="text-end">
+                                    Total vendido
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var product in Model.TopProducts)
+                            {
+                                <tr>
+                                    <td>
+                                        @product.ProductName
+                                    </td>
+
+                                    <td class="text-center">
+                                        @product.QuantitySold
+                                    </td>
+
+                                    <td class="text-end">
+                                        @product.TotalSales.ToString("C")
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light border mb-0">
+                    No hay productos vendidos para el período seleccionado.
+                </div>
+            }
+
+        </div>
+    </div>
+
+
+    <!-- VENTAS POR EMPLEADO -->
+    <div class="card shadow-sm border-0 mt-4">
+        <div class="card-body">
+
+            <div class="mb-3">
+                <h4 class="fw-bold mb-1">
+                    Ventas por empleado
+                </h4>
+
+                <p class="text-muted mb-0">
+                    Pedidos entregados y total vendido por usuario.
+                </p>
+            </div>
+
+            @if (Model.EmployeeSales.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+                            <tr>
+                                <th>
+                                    Empleado
+                                </th>
+
+                                <th class="text-center">
+                                    Pedidos entregados
+                                </th>
+
+                                <th class="text-end">
+                                    Total vendido
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var employee in Model.EmployeeSales)
+                            {
+                                <tr>
+                                    <td>
+                                        @employee.EmployeeEmail
+                                    </td>
+
+                                    <td class="text-center">
+                                        @employee.OrdersCount
+                                    </td>
+
+                                    <td class="text-end">
+                                        @employee.TotalSales.ToString("C")
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-light border mb-0">
+                    No hay ventas por empleado para el período seleccionado.
+                </div>
+            }
+
+        </div>
+        <!-- VENTAS POR DÍA -->
+        <div class="card shadow-sm border-0 mt-4">
+            <div class="card-body">
+
+                <div class="mb-3">
+                    <h4 class="fw-bold mb-1">
+                        Ventas por día
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Resumen de pedidos entregados y ventas agrupadas por fecha.
+                    </p>
+                </div>
+
+                @if (Model.DailySales.Any())
+                {
+                    <div class="table-responsive">
+
+                        <table class="table table-hover align-middle mb-0">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th>
+                                        Fecha
+                                    </th>
+
+                                    <th class="text-center">
+                                        Pedidos entregados
+                                    </th>
+
+                                    <th class="text-end">
+                                        Total vendido
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach (var day in Model.DailySales)
+                                {
+                                    <tr>
+                                        <td>
+                                            @day.Date.ToString("dd/MM/yyyy")
+                                        </td>
+
+                                        <td class="text-center">
+                                            @day.OrdersCount
+                                        </td>
+
+                                        <td class="text-end">
+                                            @day.TotalSales.ToString("C")
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-light border mb-0">
+                        No hay ventas registradas para el período seleccionado.
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
