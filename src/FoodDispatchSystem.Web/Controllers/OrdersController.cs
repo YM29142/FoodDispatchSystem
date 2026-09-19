@@ -109,7 +109,29 @@ public class OrdersController : Controller
         };
         decimal total = 0;
 
-        foreach (var item in model.Items)
+        var consolidatedItems = model.Items
+    .GroupBy(i => i.ProductId)
+    .Select(g => new
+    {
+        ProductId = g.Key,
+        Quantity = g.Sum(i => i.Quantity)
+    })
+    .ToList();
+
+        if (consolidatedItems.Any(i => i.Quantity > 100))
+        {
+            ModelState.AddModelError(
+                "",
+                "La cantidad total de un producto no puede superar 100.");
+
+            ViewBag.Products = await _context.Products
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+
+            return View(model);
+        }
+        foreach (var item in consolidatedItems)
         {
             var product = await _context.Products
                 .FirstOrDefaultAsync(p =>
