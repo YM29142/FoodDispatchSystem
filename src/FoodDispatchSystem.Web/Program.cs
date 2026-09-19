@@ -5,6 +5,7 @@ using FoodDispatchSystem.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using FoodDispatchSystem.Web.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 var cultureInfo = new CultureInfo("en-US");
 
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<BusinessService>();
+builder.Services.AddScoped<OrderItemService>();
+
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
@@ -31,6 +34,8 @@ builder.Services
     })
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
+
+
 
 var app = builder.Build();
 await IdentitySeeder.SeedRolesAsync(app.Services);

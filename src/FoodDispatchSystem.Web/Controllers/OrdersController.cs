@@ -6,16 +6,21 @@ using FoodDispatchSystem.Web.Models;
 namespace FoodDispatchSystem.Web.Controllers;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using FoodDispatchSystem.Web.Services;
 
 [Authorize]
 public class OrdersController : Controller
 
 {
     private readonly ApplicationDbContext _context;
+    private readonly OrderItemService _orderItemService;
 
-    public OrdersController(ApplicationDbContext context)
+    public OrdersController(
+     ApplicationDbContext context,
+     OrderItemService orderItemService)
     {
         _context = context;
+        _orderItemService = orderItemService;
     }
 
     public async Task<IActionResult> Index(
@@ -109,16 +114,10 @@ public class OrdersController : Controller
         };
         decimal total = 0;
 
-        var consolidatedItems = model.Items
-    .GroupBy(i => i.ProductId)
-    .Select(g => new
-    {
-        ProductId = g.Key,
-        Quantity = g.Sum(i => i.Quantity)
-    })
-    .ToList();
+        var consolidatedItems =
+    _orderItemService.ConsolidateItems(model.Items);
 
-        if (consolidatedItems.Any(i => i.Quantity > 100))
+        if (_orderItemService.ExceedsMaximumQuantity(model.Items))
         {
             ModelState.AddModelError(
                 "",

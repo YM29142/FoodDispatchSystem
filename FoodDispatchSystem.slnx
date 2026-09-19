@@ -2,4 +2,5 @@
   <Folder Name="/src/">
     <Project Path="src/FoodDispatchSystem.Web/FoodDispatchSystem.Web.csproj" />
   </Folder>
+  <Project Path="FoodDispatchSystem.Tests/FoodDispatchSystem.Tests.csproj" Id="047d2f74-05f5-4986-9742-051ae695803b" />
 </Solution>
