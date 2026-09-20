@@ -32,75 +32,104 @@
     ViewData["Title"] = "Detalle del pedido";
 }
 
-<h1>Detalle del pedido</h1>
-
-<hr />
-
 <div class="mb-4">
-    <h4>@Model.OrderNumber</h4>
+    <h1 class="mb-1">
+        Detalle del pedido
+    </h1>
 
-    <p>
-        <strong>Fecha:</strong>
-        @Model.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
-    </p>
-
-    @if (User.IsInRole("Administrador"))
-    {
-        <p>
-            <strong>Creado por:</strong>
-
-            @if (!string.IsNullOrWhiteSpace(Model.CreatedByEmail))
-            {
-                @Model.CreatedByEmail
-            }
-            else
-            {
-                <span class="text-muted">
-                    No disponible
-                </span>
-            }
-        </p>
-    }
-
-    <p>
-        <strong>Estado:</strong>
-
-        @switch (Model.Status)
-        {
-            case OrderStatus.Pending:
-                <span class="badge bg-warning text-dark">
-                    Pendiente
-                </span>
-                break;
-
-            case OrderStatus.Preparing:
-                <span class="badge bg-primary">
-                    Preparando
-                </span>
-                break;
-
-            case OrderStatus.Ready:
-                <span class="badge bg-info text-dark">
-                    Listo
-                </span>
-                break;
-
-            case OrderStatus.Delivered:
-                <span class="badge bg-success">
-                    Entregado
-                </span>
-                break;
-
-            case OrderStatus.Cancelled:
-                <span class="badge bg-danger">
-                    Cancelado
-                </span>
-                break;
-        }
+    <p class="text-muted mb-0">
+        Información general y productos registrados en el pedido.
     </p>
 </div>
 
-<table class="table table-striped">
+<div class="order-summary-card mb-4">
+
+    <h4 class="mb-3">
+        @Model.OrderNumber
+    </h4>
+
+    <div class="order-summary-grid">
+
+        <div>
+            <span class="order-summary-label">
+                Fecha
+            </span>
+
+            <div class="order-summary-value">
+                @Model.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+            </div>
+        </div>
+
+        @if (User.IsInRole("Administrador"))
+        {
+            <div>
+                <span class="order-summary-label">
+                    Creado por
+                </span>
+
+                <div class="order-summary-value">
+                    @if (!string.IsNullOrWhiteSpace(Model.CreatedByEmail))
+                    {
+                        @Model.CreatedByEmail
+                    }
+                    else
+                    {
+                        <span class="text-muted">
+                            No disponible
+                        </span>
+                    }
+                </div>
+            </div>
+        }
+
+        <div>
+            <span class="order-summary-label">
+                Estado
+            </span>
+
+            <div class="order-summary-value">
+                @switch (Model.Status)
+                {
+                    case OrderStatus.Pending:
+                        <span class="badge bg-warning text-dark">
+                            Pendiente
+                        </span>
+                        break;
+
+                    case OrderStatus.Preparing:
+                        <span class="badge bg-primary">
+                            Preparando
+                        </span>
+                        break;
+
+                    case OrderStatus.Ready:
+                        <span class="badge bg-info text-dark">
+                            Listo
+                        </span>
+                        break;
+
+                    case OrderStatus.Delivered:
+                        <span class="badge bg-success">
+                            Entregado
+                        </span>
+                        break;
+
+                    case OrderStatus.Cancelled:
+                        <span class="badge bg-danger">
+                            Cancelado
+                        </span>
+                        break;
+                }
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="orders-table-card mb-3">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 orders-table">
     <thead>
         <tr>
             <th>Producto</th>
@@ -128,18 +157,23 @@
             </tr>
         }
     </tbody>
-</table>
+        </table>
+    </div>
+</div>
 
-<div class="text-end">
-    <h4>
-        Total:
+<div class="order-total-summary">
+    <span class="order-total-label">
+        Total del pedido
+    </span>
+
+    <span class="order-total-value">
         @Model.Total.ToString("C")
-    </h4>
+    </span>
 </div>
 
 <a asp-action="Index"
-   class="btn btn-secondary">
-    Volver a pedidos
+   class="btn order-back-btn">
+    ← Volver a pedidos
 </a>
 @if (User.IsInRole("Administrador"))
 {

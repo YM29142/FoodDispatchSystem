@@ -15,11 +15,19 @@
         ?? new List<Product>();
 }
 
-<h1>Nuevo pedido</h1>
+<div class="mb-4">
+    <h1 class="mb-1">
+        Nuevo pedido
+    </h1>
 
-<hr />
+    <p class="text-muted mb-0">
+        Selecciona los productos y cantidades del pedido.
+    </p>
+</div>
 
-<form asp-action="Create" method="post">
+<div class="order-create-card">
+
+    <form asp-action="Create" method="post">
 
     <div asp-validation-summary="ModelOnly"
          class="text-danger">
@@ -75,9 +83,9 @@
 
                 <div class="col-md-2 d-flex align-items-center pt-4">
                     <button type="button"
-                            class="btn btn-outline-danger remove-item d-none">
-                        Quitar
-                    </button>
+        class="btn remove-item-btn remove-item d-none">
+    Quitar
+</button>
                 </div>
 
             </div>
@@ -88,27 +96,29 @@
     
     <div class="d-flex gap-2 mt-3">
 
-        <button type="button"
-                id="add-item"
-                class="btn btn-success">
-            + Agregar producto
-        </button>
+    <button type="button"
+            id="add-item"
+            class="btn order-add-product-btn">
+        + Agregar producto
+    </button>
 
-        <button type="submit"
-                class="btn btn-primary">
-            Crear pedido
-        </button>
+    <button type="submit"
+            class="btn order-create-btn">
+        Crear pedido
+    </button>
 
-        <a asp-controller="Home"
-           asp-action="Index"
-           class="btn btn-secondary">
-            Cancelar
-        </a>
+    <a asp-controller="Home"
+       asp-action="Index"
+       class="btn order-cancel-btn">
+        Cancelar
+    </a>
 
-    </div>
+</div>
     
+    </form>
 
-</form>
+</div>
+
 <script>
     const container = document.getElementById("items-container");
 

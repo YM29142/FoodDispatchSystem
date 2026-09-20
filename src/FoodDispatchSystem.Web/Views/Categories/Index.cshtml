@@ -4,19 +4,28 @@
     ViewData["Title"] = "Categorías";
 }
 
-<h1>Categorías</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
-<p>
-    Aquí se mostrarán las categorías disponibles del menú.
-</p>
+    <div>
+        <h1 class="mb-1">
+            Categorías
+        </h1>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">
-        Nueva categoría
+        <p class="text-muted mb-0">
+            Administra las categorías disponibles del menú.
+        </p>
+    </div>
+
+    <a asp-action="Create"
+       class="btn quick-action-btn quick-action-primary">
+        + Nueva categoría
     </a>
-</p>
 
-<table class="table">
+</div>
+
+<div class="orders-table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 orders-table">
     <thead>
         <tr>
             <th>Nombre</th>
@@ -31,46 +40,53 @@
             <tr>
                 <td>@category.Name</td>
                 <td>@category.Description</td>
-                <td>
-                    @if (category.IsActive)
-                    {
-                        <span>Activa</span>
-                    }
-                    else
-                    {
-                        <span>Inactiva</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit"
-                       asp-route-id="@category.Id"
-                       class="btn btn-sm btn-warning">
-                        Editar
-                    </a>
+               <td>
+    @if (category.IsActive)
+    {
+        <span class="badge bg-success">
+            Activa
+        </span>
+    }
+    else
+    {
+        <span class="badge bg-secondary">
+            Inactiva
+        </span>
+    }
+</td>
 
-                    @if (category.IsActive)
-                    {
-                        <a asp-action="Delete"
-                           asp-route-id="@category.Id"
-                           class="btn btn-sm btn-danger">
-                            Desactivar
-                        </a>
-                    }
-                    else
-                    {
-                        <form asp-action="Reactivate"
-                              asp-route-id="@category.Id"
-                              method="post"
-                              class="d-inline">
+<td>
+   <a asp-action="Edit"
+   asp-route-id="@category.Id"
+   class="btn btn-sm product-action-btn product-edit-btn">
+    Editar
+</a>
 
-                            <button type="submit"
-                                    class="btn btn-sm btn-success">
-                                Reactivar
-                            </button>
-                        </form>
-                    }
-                </td>
+    @if (category.IsActive)
+    {
+        <a asp-action="Delete"
+   asp-route-id="@category.Id"
+   class="btn btn-sm product-action-btn product-disable-btn">
+    Desactivar
+</a>
+    }
+    else
+    {
+        <form asp-action="Reactivate"
+              asp-route-id="@category.Id"
+              method="post"
+              class="d-inline">
+
+           <button type="submit"
+        class="btn btn-sm product-action-btn product-reactivate-btn">
+    Reactivar
+</button>
+        </form>
+    }
+</td>
             </tr>
         }
     </tbody>
-</table>
+        </table>
+    </div>
+</div>

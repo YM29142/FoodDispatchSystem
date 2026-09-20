@@ -155,43 +155,39 @@
 </h4>
 
 <div class="d-flex flex-wrap gap-2">
-    <div class="d-flex gap-2 flex-wrap">
 
-        @if (User.IsInRole("Administrador") ||
-      User.IsInRole("Cajero"))
-        {
-            <a asp-controller="Orders"
-               asp-action="Create"
-               class="btn btn-primary">
-                Nuevo pedido
-            </a>
-        }
-
+    @if (User.IsInRole("Administrador") ||
+         User.IsInRole("Cajero"))
+    {
         <a asp-controller="Orders"
+           asp-action="Create"
+           class="btn quick-action-btn quick-action-primary">
+            + Nuevo pedido
+        </a>
+    }
+
+    <a asp-controller="Orders"
+       asp-action="Index"
+       class="btn quick-action-btn">
+        Pedidos
+    </a>
+
+    @if (User.IsInRole("Administrador"))
+    {
+        <a asp-controller="Products"
            asp-action="Index"
-           class="btn btn-info">
-            Pedidos
+           class="btn quick-action-btn">
+            Productos
         </a>
 
-        @if (User.IsInRole("Administrador"))
-        {
-            <a asp-controller="Products"
-               asp-action="Index"
-               class="btn btn-warning">
-                Productos
-            </a>
-
-            <a asp-controller="Categories"
-               asp-action="Index"
-               class="btn btn-secondary">
-                Categorías
-            </a>
-        }
-
-    </div>
+        <a asp-controller="Categories"
+           asp-action="Index"
+           class="btn quick-action-btn">
+            Categorías
+        </a>
+    }
 
 </div>
-
 <hr class="mt-4" />
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -199,99 +195,100 @@
         Últimos 5 pedidos
     </h4>
 
-    <a asp-controller="Orders"
-       asp-action="Index"
-       class="btn btn-sm btn-outline-primary">
-        Ver todos
-    </a>
+  <a asp-controller="Orders"
+   asp-action="Index"
+   class="btn btn-sm view-all-btn">
+    Ver todos
+</a>
 </div>
-
 @if (Model.RecentOrders.Any())
 {
-    <div class="table-responsive">
-        <table class="table table-striped align-middle">
+    <div class="recent-orders-card">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 dashboard-orders-table">
 
-            <thead>
-                <tr>
-                    <th>Pedido</th>
-                    <th>Fecha y hora</th>
-                    <th>Productos</th>
-                    <th>Estado</th>
-                    <th>Total</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-
-            <tbody>
-                @foreach (var order in Model.RecentOrders)
-                {
+                <thead>
                     <tr>
-                        <td>
-                            <strong>
-                                @order.OrderNumber
-                            </strong>
-                        </td>
-
-                        <td>
-                            @order.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
-                        </td>
-
-                        <td>
-                            @order.OrderDetails.Sum(d => d.Quantity)
-                        </td>
-
-                        <td>
-                            @switch (order.Status)
-                            {
-                                case OrderStatus.Pending:
-                                    <span class="badge bg-warning text-dark">
-                                        Pendiente
-                                    </span>
-                                    break;
-
-                                case OrderStatus.Preparing:
-                                    <span class="badge bg-primary">
-                                        Preparando
-                                    </span>
-                                    break;
-
-                                case OrderStatus.Ready:
-                                    <span class="badge bg-info text-dark">
-                                        Listo
-                                    </span>
-                                    break;
-
-                                case OrderStatus.Delivered:
-                                    <span class="badge bg-success">
-                                        Entregado
-                                    </span>
-                                    break;
-
-                                case OrderStatus.Cancelled:
-                                    <span class="badge bg-danger">
-                                        Cancelado
-                                    </span>
-                                    break;
-                            }
-                        </td>
-
-                        <td>
-                            @order.Total.ToString("C")
-                        </td>
-
-                        <td>
-                            <a asp-controller="Orders"
-                               asp-action="Details"
-                               asp-route-id="@order.Id"
-                               class="btn btn-sm btn-info">
-                                Ver detalle
-                            </a>
-                        </td>
+                        <th>Pedido</th>
+                        <th>Fecha y hora</th>
+                        <th>Productos</th>
+                        <th>Estado</th>
+                        <th>Total</th>
+                        <th>Acciones</th>
                     </tr>
-                }
-            </tbody>
+                </thead>
 
-        </table>
+                <tbody>
+                    @foreach (var order in Model.RecentOrders)
+                    {
+                        <tr>
+                            <td>
+                                <strong>
+                                    @order.OrderNumber
+                                </strong>
+                            </td>
+
+                            <td>
+                                @order.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+                            </td>
+
+                            <td>
+                                @order.OrderDetails.Sum(d => d.Quantity)
+                            </td>
+
+                            <td>
+                                @switch (order.Status)
+                                {
+                                    case OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark">
+                                            Pendiente
+                                        </span>
+                                        break;
+
+                                    case OrderStatus.Preparing:
+                                        <span class="badge bg-primary">
+                                            Preparando
+                                        </span>
+                                        break;
+
+                                    case OrderStatus.Ready:
+                                        <span class="badge bg-info text-dark">
+                                            Listo
+                                        </span>
+                                        break;
+
+                                    case OrderStatus.Delivered:
+                                        <span class="badge bg-success">
+                                            Entregado
+                                        </span>
+                                        break;
+
+                                    case OrderStatus.Cancelled:
+                                        <span class="badge bg-danger">
+                                            Cancelado
+                                        </span>
+                                        break;
+                                }
+                            </td>
+
+                            <td>
+                                @order.Total.ToString("C")
+                            </td>
+
+                            <td>
+                               <a asp-controller="Orders"
+   asp-action="Details"
+   asp-route-id="@order.Id"
+   class="btn btn-sm order-action-btn order-action-view">
+    Ver detalle
+</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+        </div>
     </div>
 }
 else

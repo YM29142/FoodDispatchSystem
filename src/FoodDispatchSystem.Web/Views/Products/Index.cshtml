@@ -4,20 +4,28 @@
     ViewData["Title"] = "Productos";
 }
 
-<h1>Productos</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
 
-<p>
-    Aquí se mostrarán los productos disponibles del menú.
-</p>
+    <div>
+        <h1 class="mb-1">
+            Productos
+        </h1>
 
-<p>
+        <p class="text-muted mb-0">
+            Administra los productos disponibles del menú.
+        </p>
+    </div>
+
     <a asp-action="Create"
-       class="btn btn-primary">
-        Nuevo producto
+       class="btn quick-action-btn quick-action-primary">
+        + Nuevo producto
     </a>
-</p>
 
-<table class="table">
+</div>
+
+<div class="orders-table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 orders-table">
     <thead>
         <tr>
             <th>Nombre</th>
@@ -44,46 +52,52 @@
                     $@product.Price.ToString("0.00")
                 </td>
 
-                <td>
-                    @if (product.IsActive)
-                    {
-                        <span>Activo</span>
-                    }
-                    else
-                    {
-                        <span>Inactivo</span>
-                    }
-                </td>
-                <td>
-                    <a asp-action="Edit"
-                       asp-route-id="@product.Id"
-                       class="btn btn-sm btn-warning">
-                        Editar
-                    </a>
+               <td>
+    @if (product.IsActive)
+    {
+        <span class="badge bg-success">
+            Activo
+        </span>
+    }
+    else
+    {
+        <span class="badge bg-secondary">
+            Inactivo
+        </span>
+    }
+</td>
+               <td>
+    <a asp-action="Edit"
+       asp-route-id="@product.Id"
+       class="btn btn-sm product-action-btn product-edit-btn">
+        Editar
+    </a>
 
-                    @if (product.IsActive)
-                    {
-                        <a asp-action="Delete"
-                           asp-route-id="@product.Id"
-                           class="btn btn-sm btn-danger">
-                            Desactivar
-                        </a>
-                    }
-                    else
-                    {
-                        <form asp-action="Reactivate"
-                              asp-route-id="@product.Id"
-                              method="post"
-                              class="d-inline">
+    @if (product.IsActive)
+    {
+        <a asp-action="Delete"
+           asp-route-id="@product.Id"
+           class="btn btn-sm product-action-btn product-disable-btn">
+            Desactivar
+        </a>
+    }
+    else
+    {
+        <form asp-action="Reactivate"
+              asp-route-id="@product.Id"
+              method="post"
+              class="d-inline">
 
-                            <button type="submit"
-                                    class="btn btn-sm btn-success">
-                                Reactivar
-                            </button>
-                        </form>
-                    }
-                </td>
+            <button type="submit"
+                    class="btn btn-sm product-action-btn product-reactivate-btn">
+                Reactivar
+            </button>
+        </form>
+    }
+</td>
             </tr>
         }
     </tbody>
-</table>
+        </table>
+    </div>
+</div>

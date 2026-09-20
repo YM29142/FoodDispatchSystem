@@ -4,13 +4,17 @@
     ViewData["Title"] = "Editar categoría";
 }
 
-<h1>Editar categoría</h1>
+<div class="mb-4">
+    <h1 class="mb-1">
+        Editar categoría
+    </h1>
 
-<hr />
-
+    <p class="text-muted mb-0">
+        Actualiza la información de la categoría seleccionada.
+    </p>
+</div>
 <div class="row">
-    <div class="col-md-6">
-
+    <div class="col-lg-7 col-md-9 product-form-card">
         <form asp-action="Edit" method="post">
 
             <input type="hidden" asp-for="Id" />
@@ -36,23 +40,29 @@
                       class="text-danger"></span>
             </div>
 
-            <div class="form-check mb-3">
-                <input asp-for="IsActive"
-                       class="form-check-input" />
+           <div class="form-check form-switch product-active-switch mb-4">
 
-                <label asp-for="IsActive"
-                       class="form-check-label">
-                    Activa
-                </label>
-            </div>
+    <input asp-for="IsActive"
+           class="form-check-input" />
+
+    <label asp-for="IsActive"
+           class="form-check-label">
+        Categoría activa
+    </label>
+
+    <div class="form-text">
+        Las categorías activas estarán disponibles para organizar productos.
+    </div>
+
+</div>
 
             <button type="submit"
-                    class="btn btn-primary">
+                   class="btn order-create-btn">
                 Guardar cambios
             </button>
 
             <a asp-action="Index"
-               class="btn btn-secondary">
+               class="btn order-cancel-btn">
                 Cancelar
             </a>
 

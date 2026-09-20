@@ -17,11 +17,11 @@
             </p>
         </div>
 
-        <a asp-controller="Home"
-           asp-action="Index"
-           class="btn btn-outline-secondary">
-            Volver al Dashboard
-        </a>
+       <a asp-controller="Home"
+   asp-action="Index"
+   class="btn order-back-btn">
+    ← Volver al Dashboard
+</a>
     </div>
 
     @if (TempData["SuccessMessage"] != null)
@@ -42,8 +42,7 @@
     <div class="row">
 
         <div class="col-lg-8">
-
-            <div class="card shadow-sm border-0">
+<div class="card business-settings-card">
 
                 <div class="card-body p-4">
 
@@ -156,15 +155,14 @@
 
                                     <img src="@Model.CurrentLogoPath"
                                          alt="Logo del negocio"
-                                         class="img-thumbnail"
+                                         class="img-thumbnail business-logo-preview"
                                          style="max-height: 120px; max-width: 220px;" />
                                 </div>
                             }
-
-                            <input asp-for="LogoFile"
-                                   type="file"
-                                   class="form-control"
-                                   accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
+<input asp-for="LogoFile"
+       type="file"
+       class="form-control business-logo-input"
+       accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp" />
 
                             <div class="form-text">
                                 Formatos permitidos: JPG, PNG o WEBP. Máximo 2 MB.
@@ -177,14 +175,13 @@
                         </div>
 
                         <div class="d-flex justify-content-end">
-                            <button type="submit"
-                                    class="btn btn-primary px-4">
-                                Guardar cambios
-                            </button>
-                        </div>
+    <button type="submit"
+            class="btn order-create-btn px-4">
+        Guardar cambios
+    </button>
+</div>
 
-                    </form>
-
+</form>
                 </div>
 
             </div>
@@ -193,7 +190,7 @@
 
         <div class="col-lg-4 mt-4 mt-lg-0">
 
-            <div class="card shadow-sm border-0">
+            <div class="card business-settings-card">
 
                 <div class="card-body p-4">
 
@@ -201,22 +198,31 @@
                         Personalización
                     </h5>
 
-                    <p class="text-muted small">
-                        El nombre configurado aquí se mostrará automáticamente
-                        en el menú, Dashboard y pantalla de inicio de sesión.
-                    </p>
+                  <p class="text-muted small">
+    La información configurada aquí personaliza
+    automáticamente FoodDispatch para tu negocio.
+</p>
 
-                    <hr />
+<hr />
 
-                    <p class="small text-muted mb-1">
-                        Próximamente
-                    </p>
+<p class="small fw-semibold mb-2">
+    Configurado
+</p>
 
-                    <ul class="small mb-0">
-                        <li>Logo del negocio</li>
-                        <li>Información comercial</li>
-                        <li>Preferencias visuales</li>
-                    </ul>
+<ul class="small mb-3">
+    <li>Nombre del negocio</li>
+    <li>Logo del negocio</li>
+    <li>Información de contacto</li>
+    <li>Moneda</li>
+</ul>
+
+<p class="small text-muted mb-1">
+    Próximamente
+</p>
+
+<ul class="small mb-0">
+    <li>Preferencias visuales</li>
+</ul>
 
                 </div>
 

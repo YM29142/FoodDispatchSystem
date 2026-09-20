@@ -19,7 +19,7 @@
 
 
     <!-- FILTRO POR FECHAS -->
-    <div class="card shadow-sm border-0 mb-4">
+    <div class="card business-settings-card mb-4">
         <div class="card-body">
 
             <form method="get"
@@ -57,17 +57,16 @@
                     <div class="col-md-4">
                         <div class="d-flex gap-2">
 
-                            <button type="submit"
-                                    class="btn btn-primary">
-                                Filtrar
-                            </button>
+                          <button type="submit"
+        class="btn order-create-btn">
+    Filtrar
+</button>
 
-                            <a asp-controller="Reports"
-                               asp-action="Index"
-                               class="btn btn-outline-secondary">
-                                Limpiar
-                            </a>
-
+                          <a asp-controller="Reports"
+   asp-action="Index"
+   class="btn order-cancel-btn">
+    Limpiar
+</a>
                         </div>
                     </div>
 
@@ -92,7 +91,7 @@
     <div class="row g-4">
 
         <div class="col-md-6 col-xl">
-            <div class="card shadow-sm border-0 h-100">
+           <div class="card dashboard-card h-100 border-secondary">
                 <div class="card-body">
 
                     <p class="text-muted mb-2">
@@ -109,7 +108,7 @@
 
 
         <div class="col-md-6 col-xl">
-            <div class="card shadow-sm border-0 h-100">
+            <div class="card dashboard-card h-100 border-success">
                 <div class="card-body">
 
                     <p class="text-muted mb-2">
@@ -126,7 +125,7 @@
 
 
         <div class="col-md-6 col-xl">
-            <div class="card shadow-sm border-0 h-100">
+           <div class="card dashboard-card h-100 border-danger">
                 <div class="card-body">
 
                     <p class="text-muted mb-2">
@@ -143,7 +142,7 @@
 
 
         <div class="col-md-6 col-xl">
-            <div class="card shadow-sm border-0 h-100">
+         <div class="card dashboard-card h-100 border-primary">
                 <div class="card-body">
 
                     <p class="text-muted mb-2">
@@ -160,7 +159,7 @@
 
 
         <div class="col-md-6 col-xl">
-            <div class="card shadow-sm border-0 h-100">
+        <div class="card dashboard-card h-100 border-info">
                 <div class="card-body">
 
                     <p class="text-muted mb-2">
@@ -179,7 +178,7 @@
 
 
     <!-- PRODUCTOS MÁS VENDIDOS -->
-    <div class="card shadow-sm border-0 mt-4">
+   <div class="card business-settings-card mt-4">
         <div class="card-body">
 
             <div class="mb-3">
@@ -196,7 +195,7 @@
             {
                 <div class="table-responsive">
 
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table align-middle mb-0 orders-table">
 
                         <thead class="table-light">
                             <tr>
@@ -251,7 +250,7 @@
 
 
     <!-- VENTAS POR EMPLEADO -->
-    <div class="card shadow-sm border-0 mt-4">
+    <div class="card business-settings-card mt-4">
         <div class="card-body">
 
             <div class="mb-3">
@@ -268,7 +267,7 @@
             {
                 <div class="table-responsive">
 
-                    <table class="table table-hover align-middle mb-0">
+                    <table class="table align-middle mb-0 orders-table">
 
                         <thead class="table-light">
                             <tr>

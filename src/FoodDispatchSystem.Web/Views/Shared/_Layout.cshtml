@@ -121,7 +121,7 @@
 
                 @if (User.Identity?.IsAuthenticated == true)
                 {
-                    <span class="text-muted">
+                    <span class="user-email">
                         @User.Identity.Name
                     </span>
 
@@ -131,11 +131,12 @@
                           class="d-inline">
 
                         <button type="submit"
-                                class="btn btn-outline-danger btn-sm">
+                                class="btn btn-sm logout-btn">
                             Cerrar sesión
                         </button>
 
                     </form>
+                    
                 }
                 else
                 {

@@ -5,10 +5,31 @@
     ViewData["Title"] = "Pedidos";
 }
 
-<h1>Pedidos</h1>
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+
+    <div>
+        <h1 class="mb-1">
+            Pedidos
+        </h1>
+
+        <p class="text-muted mb-0">
+            Gestiona y da seguimiento a los pedidos.
+        </p>
+    </div>
+
+    @if (User.IsInRole("Administrador") ||
+         User.IsInRole("Cajero"))
+    {
+        <a asp-action="Create"
+           class="btn quick-action-btn quick-action-primary">
+            + Nuevo pedido
+        </a>
+    }
+
+</div>
 @if (ViewBag.SelectedStatus != null || ViewBag.TodayFilter == true)
 {
-    <div class="alert alert-info d-flex justify-content-between align-items-center">
+    <div class="active-filter-card d-flex justify-content-between align-items-center">
 
         <div>
             <strong>Filtro activo:</strong>
@@ -43,12 +64,10 @@
                 <span>Cancelados</span>
             }
         </div>
-
-        <a asp-action="Index"
-           class="btn btn-sm btn-outline-primary">
-            Mostrar todos
-        </a>
-
+<a asp-action="Index"
+   class="btn btn-sm clear-filter-btn">
+    Mostrar todos
+</a>
     </div>
 }
 
@@ -59,18 +78,10 @@
     </div>
 }
 
-<p>
-    @if (User.IsInRole("Administrador") ||
-      User.IsInRole("Cajero"))
-    {
-        <a asp-action="Create"
-           class="btn btn-primary">
-            Nuevo pedido
-        </a>
-    }
-</p>
 
-<table class="table table-striped align-middle">
+<div class="orders-table-card">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 orders-table">
     <thead>
         <tr>
             <th>Pedido</th>
@@ -139,11 +150,11 @@
 </td>
 
 <td>
-    <a asp-action="Details"
-       asp-route-id="@order.Id"
-       class="btn btn-sm btn-info">
-        Ver detalle
-    </a>
+   <a asp-action="Details"
+   asp-route-id="@order.Id"
+   class="btn btn-sm order-action-btn order-action-view">
+    Ver detalle
+</a>
 
     @* PREPARAR: Administrador o Cocina *@
     @if (order.Status == OrderStatus.Pending &&
@@ -160,9 +171,9 @@
                    value="@((int)OrderStatus.Preparing)" />
 
             <button type="submit"
-                    class="btn btn-sm btn-primary">
-                Preparar
-            </button>
+        class="btn btn-sm order-action-btn order-action-prepare">
+    Preparar
+</button>
         </form>
     }
 
@@ -180,11 +191,11 @@
                    name="status"
                    value="@((int)OrderStatus.Cancelled)" />
 
-            <button type="submit"
-                    class="btn btn-sm btn-danger"
-                    onclick="return confirm('¿Está seguro de cancelar este pedido?');">
-                Cancelar
-            </button>
+          <button type="submit"
+        class="btn btn-sm order-action-btn order-action-cancel"
+        onclick="return confirm('¿Está seguro de cancelar este pedido?');">
+    Cancelar
+</button>
         </form>
     }
 
@@ -202,10 +213,10 @@
                    name="status"
                    value="@((int)OrderStatus.Ready)" />
 
-            <button type="submit"
-                    class="btn btn-sm btn-success">
-                Marcar listo
-            </button>
+           <button type="submit"
+        class="btn btn-sm order-action-btn order-action-success">
+    Marcar listo
+</button>
         </form>
     }
 
@@ -223,10 +234,10 @@
                    name="status"
                    value="@((int)OrderStatus.Delivered)" />
 
-            <button type="submit"
-                    class="btn btn-sm btn-success">
-                Entregar
-            </button>
+          <button type="submit"
+        class="btn btn-sm order-action-btn order-action-success">
+    Entregar
+</button>
         </form>
     }
 </td>
@@ -235,4 +246,6 @@
             </tr>
         }
     </tbody>
-</table>
+        </table>
+    </div>
+</div>
