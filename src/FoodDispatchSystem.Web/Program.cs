@@ -15,8 +15,8 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+options.UseSqlServer(
+builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<BusinessService>();
 builder.Services.AddScoped<OrderItemService>();
 
@@ -40,9 +40,20 @@ builder.Services
 var app = builder.Build();
 await IdentitySeeder.SeedRolesAsync(app.Services);
 
-if (app.Environment.IsDevelopment())
+var seedAdminEmail =
+    app.Configuration["SeedAdmin:Email"];
+
+var seedAdminPassword =
+    app.Configuration["SeedAdmin:Password"];
+
+if (!string.IsNullOrWhiteSpace(seedAdminEmail) &&
+    !string.IsNullOrWhiteSpace(seedAdminPassword))
 {
     await IdentitySeeder.SeedAdminAsync(app.Services);
+}
+
+if (app.Environment.IsDevelopment())
+{
     await IdentitySeeder.SeedCajeroAsync(app.Services);
     await IdentitySeeder.SeedCocinaAsync(app.Services);
     await IdentitySeeder.SeedDespachoAsync(app.Services);
