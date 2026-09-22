@@ -4,6 +4,7 @@ using FoodDispatchSystem.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using FoodDispatchSystem.Web.Services;
 
 namespace FoodDispatchSystem.Web.Controllers
 {
@@ -11,10 +12,14 @@ namespace FoodDispatchSystem.Web.Controllers
     public class ReportsController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly BusinessTimeService _businessTimeService;
 
-        public ReportsController(ApplicationDbContext context)
+        public ReportsController(
+            ApplicationDbContext context,
+            BusinessTimeService businessTimeService)
         {
             _context = context;
+            _businessTimeService = businessTimeService;
         }
         [HttpGet]
         public async Task<IActionResult> Index(
@@ -40,21 +45,22 @@ namespace FoodDispatchSystem.Web.Controllers
 
             if (startDate.HasValue)
             {
-                var start = startDate.Value.Date;
+                var startUtc =
+                    _businessTimeService.ToUtc(startDate.Value.Date);
 
                 ordersQuery = ordersQuery
-                    .Where(o => o.CreatedAt >= start);
+                    .Where(o => o.CreatedAt >= startUtc);
             }
 
             if (endDate.HasValue)
             {
-                var endExclusive =
-                    endDate.Value.Date.AddDays(1);
+                var endExclusiveUtc =
+                    _businessTimeService.ToUtc(
+                        endDate.Value.Date.AddDays(1));
 
                 ordersQuery = ordersQuery
-                    .Where(o => o.CreatedAt < endExclusive);
+                    .Where(o => o.CreatedAt < endExclusiveUtc);
             }
-
             var totalOrders = await ordersQuery
                 .CountAsync();
 
@@ -110,18 +116,28 @@ namespace FoodDispatchSystem.Web.Controllers
     })
     .OrderByDescending(e => e.TotalSales)
     .ToListAsync();
+            var deliveredOrdersForDailySales = await ordersQuery
+                .Where(o => o.Status == OrderStatus.Delivered)
+                .Select(o => new
+                {
+                    o.CreatedAt,
+                    o.Total
+                })
+                .ToListAsync();
 
-            var dailySales = await ordersQuery
-    .Where(o => o.Status == OrderStatus.Delivered)
-    .GroupBy(o => o.CreatedAt.Date)
-    .Select(g => new DailySalesViewModel
-    {
-        Date = g.Key,
-        OrdersCount = g.Count(),
-        TotalSales = g.Sum(o => o.Total)
-    })
-    .OrderBy(d => d.Date)
-    .ToListAsync();
+            var dailySales = deliveredOrdersForDailySales
+                .GroupBy(o =>
+                    _businessTimeService
+                        .ToLocalTime(o.CreatedAt)
+                        .Date)
+                .Select(g => new DailySalesViewModel
+                {
+                    Date = g.Key,
+                    OrdersCount = g.Count(),
+                    TotalSales = g.Sum(o => o.Total)
+                })
+                .OrderBy(d => d.Date)
+                .ToList();
 
             var model = new ReportsViewModel
             {

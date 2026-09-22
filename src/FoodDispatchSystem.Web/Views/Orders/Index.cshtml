@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<FoodDispatchSystem.Web.Models.Order>
 @using FoodDispatchSystem.Web.Models
+@inject FoodDispatchSystem.Web.Services.BusinessTimeService BusinessTimeService
 
 @{
     ViewData["Title"] = "Pedidos";
@@ -103,7 +104,8 @@
                 </td>
 
                 <td>
-                    @order.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+                            @(BusinessTimeService.ToLocalTime(order.CreatedAt)
+    .ToString("dd/MM/yyyy hh:mm tt"))
                 </td>
 
                 <td>

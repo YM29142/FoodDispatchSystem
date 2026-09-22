@@ -72,15 +72,24 @@ namespace FoodDispatchSystem.Web.Controllers
             }
 
             var existingUser = await _userManager
-                .FindByEmailAsync(model.AdminEmail);
+                .FindByEmailAsync(model.AdminEmail.Trim());
 
+            // Si el usuario ya existe, verificamos que la contraseña sea correcta.
             if (existingUser != null)
             {
-                ModelState.AddModelError(
-                    nameof(model.AdminEmail),
-                    "Ya existe un usuario con este correo electrónico.");
+                var passwordIsValid =
+                    await _userManager.CheckPasswordAsync(
+                        existingUser,
+                        model.AdminPassword);
 
-                return View(model);
+                if (!passwordIsValid)
+                {
+                    ModelState.AddModelError(
+                        nameof(model.AdminPassword),
+                        "La contraseña del administrador existente no es correcta.");
+
+                    return View(model);
+                }
             }
 
             await using var transaction =
@@ -109,47 +118,61 @@ namespace FoodDispatchSystem.Web.Controllers
                     }
                 }
 
-                var adminUser = new ApplicationUser
-                {
-                    UserName = model.AdminEmail.Trim(),
-                    Email = model.AdminEmail.Trim(),
-                    EmailConfirmed = true
-                };
+                ApplicationUser adminUser;
 
-                var createUserResult =
-                    await _userManager.CreateAsync(
-                        adminUser,
-                        model.AdminPassword);
-
-                if (!createUserResult.Succeeded)
+                if (existingUser == null)
                 {
-                    foreach (var error in createUserResult.Errors)
+                    adminUser = new ApplicationUser
                     {
-                        ModelState.AddModelError(
-                            nameof(model.AdminPassword),
-                            error.Description);
-                    }
+                        UserName = model.AdminEmail.Trim(),
+                        Email = model.AdminEmail.Trim(),
+                        EmailConfirmed = true
+                    };
 
-                    await transaction.RollbackAsync();
-                    return View(model);
+                    var createUserResult =
+                        await _userManager.CreateAsync(
+                            adminUser,
+                            model.AdminPassword);
+
+                    if (!createUserResult.Succeeded)
+                    {
+                        foreach (var error in createUserResult.Errors)
+                        {
+                            ModelState.AddModelError(
+                                nameof(model.AdminPassword),
+                                error.Description);
+                        }
+
+                        await transaction.RollbackAsync();
+                        return View(model);
+                    }
+                }
+                else
+                {
+                    adminUser = existingUser;
                 }
 
-                var addRoleResult =
-                    await _userManager.AddToRoleAsync(
-                        adminUser,
-                        adminRole);
-
-                if (!addRoleResult.Succeeded)
+                if (!await _userManager.IsInRoleAsync(
+                    adminUser,
+                    adminRole))
                 {
-                    foreach (var error in addRoleResult.Errors)
-                    {
-                        ModelState.AddModelError(
-                            string.Empty,
-                            error.Description);
-                    }
+                    var addRoleResult =
+                        await _userManager.AddToRoleAsync(
+                            adminUser,
+                            adminRole);
 
-                    await transaction.RollbackAsync();
-                    return View(model);
+                    if (!addRoleResult.Succeeded)
+                    {
+                        foreach (var error in addRoleResult.Errors)
+                        {
+                            ModelState.AddModelError(
+                                string.Empty,
+                                error.Description);
+                        }
+
+                        await transaction.RollbackAsync();
+                        return View(model);
+                    }
                 }
 
                 var business = await _context.Businesses

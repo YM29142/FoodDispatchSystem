@@ -19,6 +19,7 @@ options.UseSqlServer(
 builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<BusinessService>();
 builder.Services.AddScoped<OrderItemService>();
+builder.Services.AddScoped<BusinessTimeService>();
 
 
 builder.Services

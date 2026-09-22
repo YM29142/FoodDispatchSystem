@@ -1,6 +1,7 @@
 ﻿@inject FoodDispatchSystem.Web.Services.BusinessService BusinessService
 
 @{
+    @inject FoodDispatchSystem.Web.Services.BusinessTimeService BusinessTimeService
     var business = await BusinessService.GetBusinessAsync();
     var businessName = business?.Name ?? "FoodDispatch";
 }
@@ -229,7 +230,8 @@
                             </td>
 
                             <td>
-                                @order.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+                               @(BusinessTimeService.ToLocalTime(order.CreatedAt)
+    .ToString("dd/MM/yyyy hh:mm tt"))
                             </td>
 
                             <td>

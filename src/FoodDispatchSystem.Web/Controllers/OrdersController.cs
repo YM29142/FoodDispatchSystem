@@ -15,12 +15,16 @@ public class OrdersController : Controller
     private readonly ApplicationDbContext _context;
     private readonly OrderItemService _orderItemService;
 
+    private readonly BusinessTimeService _businessTimeService;
+
     public OrdersController(
      ApplicationDbContext context,
-     OrderItemService orderItemService)
+     OrderItemService orderItemService,
+     BusinessTimeService businessTimeService)
     {
         _context = context;
         _orderItemService = orderItemService;
+        _businessTimeService = businessTimeService;
     }
 
     public async Task<IActionResult> Index(
@@ -36,15 +40,16 @@ public class OrdersController : Controller
         {
             query = query.Where(o => o.Status == status.Value);
         }
-
         if (today)
         {
-            var startOfToday = DateTime.Today;
-            var startOfTomorrow = startOfToday.AddDays(1);
+            var localToday = _businessTimeService.LocalToday;
+
+            var (startOfTodayUtc, startOfTomorrowUtc) =
+                _businessTimeService.GetUtcRangeForLocalDate(localToday);
 
             query = query.Where(o =>
-                o.CreatedAt >= startOfToday &&
-                o.CreatedAt < startOfTomorrow);
+                o.CreatedAt >= startOfTodayUtc &&
+                o.CreatedAt < startOfTomorrowUtc);
         }
 
         var orders = await query
@@ -103,10 +108,12 @@ public class OrdersController : Controller
         {
             return Forbid();
         }
+        var utcNow = _businessTimeService.UtcNow;
+        var localNow = _businessTimeService.ToLocalTime(utcNow);
         var order = new Order
         {
-            OrderNumber = $"ORD-{DateTime.Now:yyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}",
-            CreatedAt = DateTime.Now,
+            OrderNumber = $"ORD-{localNow:yyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}",
+            CreatedAt = utcNow,
             Status = OrderStatus.Pending,
 
             CreatedByUserId = userId,

@@ -11,8 +11,7 @@ public class Order
     [StringLength(20)]
     public string OrderNumber { get; set; } = string.Empty;
 
-    public DateTime CreatedAt { get; set; } = DateTime.Now;
-
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
 
     [Column(TypeName = "decimal(10,2)")]

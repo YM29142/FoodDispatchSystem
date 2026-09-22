@@ -1,5 +1,6 @@
 ﻿@model FoodDispatchSystem.Web.Models.Order
 @{
+    @inject FoodDispatchSystem.Web.Services.BusinessTimeService BusinessTimeService
     string GetStatusName(OrderStatus status)
     {
         return status switch
@@ -56,7 +57,8 @@
             </span>
 
             <div class="order-summary-value">
-                @Model.CreatedAt.ToString("dd/MM/yyyy hh:mm tt")
+             @(BusinessTimeService.ToLocalTime(Model.CreatedAt)
+    .ToString("dd/MM/yyyy hh:mm tt"))
             </div>
         </div>
 
@@ -227,11 +229,9 @@
                                     </td>
 
                                     <td>
-                                        @history.ChangedAt.ToString(
-                                            "dd/MM/yyyy HH:mm")
-                                        <span class="text-muted small">
-                                            UTC
-                                        </span>
+                                       @(BusinessTimeService.ToLocalTime(history.ChangedAt)
+    .ToString("dd/MM/yyyy hh:mm tt"))
+                                        
                                     </td>
 
                                 </tr>

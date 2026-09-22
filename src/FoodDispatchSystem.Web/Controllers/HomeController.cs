@@ -1,10 +1,12 @@
 using FoodDispatchSystem.Web.Data;
 using FoodDispatchSystem.Web.Models;
+using FoodDispatchSystem.Web.Services;
 using FoodDispatchSystem.Web.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
+
 
 namespace FoodDispatchSystem.Web.Controllers;
 
@@ -13,26 +15,31 @@ public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
     private readonly ApplicationDbContext _context;
+    private readonly BusinessTimeService _businessTimeService;
 
+    
     public HomeController(
         ILogger<HomeController> logger,
-        ApplicationDbContext context)
+        ApplicationDbContext context,
+        BusinessTimeService businessTimeService)
     {
         _logger = logger;
         _context = context;
+        _businessTimeService = businessTimeService;
     }
-
     public async Task<IActionResult> Index()
     {
-        var today = DateTime.Today;
-        var tomorrow = today.AddDays(1);
+        var localToday = _businessTimeService.LocalToday;
+
+        var (todayUtc, tomorrowUtc) =
+            _businessTimeService.GetUtcRangeForLocalDate(localToday);
 
         var model = new DashboardViewModel
         {
             OrdersToday = await _context.Orders
-                .CountAsync(o =>
-                    o.CreatedAt >= today &&
-                    o.CreatedAt < tomorrow),
+    .CountAsync(o =>
+        o.CreatedAt >= todayUtc &&
+        o.CreatedAt < tomorrowUtc),
 
             PendingOrders = await _context.Orders
                 .CountAsync(o =>
@@ -45,19 +52,19 @@ public class HomeController : Controller
             ReadyOrders = await _context.Orders
                 .CountAsync(o =>
                     o.Status == OrderStatus.Ready),
-
             DeliveredToday = await _context.Orders
-                .CountAsync(o =>
-                    o.Status == OrderStatus.Delivered &&
-                    o.CreatedAt >= today &&
-                    o.CreatedAt < tomorrow),
+    .CountAsync(o =>
+        o.Status == OrderStatus.Delivered &&
+        o.CreatedAt >= todayUtc &&
+        o.CreatedAt < tomorrowUtc),
 
             DeliveredTotalToday = await _context.Orders
-                .Where(o =>
-                    o.Status == OrderStatus.Delivered &&
-                    o.CreatedAt >= today &&
-                    o.CreatedAt < tomorrow)
-                .SumAsync(o => (decimal?)o.Total) ?? 0,
+    .Where(o =>
+        o.Status == OrderStatus.Delivered &&
+        o.CreatedAt >= todayUtc &&
+        o.CreatedAt < tomorrowUtc)
+    .SumAsync(o => (decimal?)o.Total) ?? 0,
+               
 
 
                 RecentOrders = await _context.Orders
