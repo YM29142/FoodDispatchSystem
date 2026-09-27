@@ -62,9 +62,13 @@
 
                     <thead class="table-light">
                         <tr>
-                            <th class="ps-4">
-                                Correo electrónico
-                            </th>
+                           <th class="ps-4">
+    Empleado
+</th>
+
+<th>
+    Correo electrónico
+</th>
 
                             <th>
                                 Rol
@@ -85,7 +89,7 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="4"
+                                <td colspan="5"
                                     class="text-center text-muted py-5">
 
                                     No hay usuarios registrados.
@@ -99,11 +103,15 @@
                             {
                                 <tr>
 
-                                    <td class="ps-4">
-                                        <div class="fw-semibold">
-                                            @user.Email
-                                        </div>
-                                    </td>
+                                   <td class="ps-4">
+    <div class="fw-semibold">
+        @user.DisplayName
+    </div>
+</td>
+
+<td>
+    @user.Email
+</td>
 
                                     <td>
                                         <span class="badge bg-secondary">

@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using FoodDispatchSystem.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using FoodDispatchSystem.Web.Services;
-
+using Resend;
 
 var builder = WebApplication.CreateBuilder(args);
 var cultureInfo = new CultureInfo("en-US");
@@ -20,7 +20,17 @@ builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<BusinessService>();
 builder.Services.AddScoped<OrderItemService>();
 builder.Services.AddScoped<BusinessTimeService>();
+builder.Services.AddScoped<EmailService>();
 
+
+var resendApiKey = builder.Configuration["Resend:ApiKey"]
+    ?? throw new InvalidOperationException(
+        "Resend:ApiKey no está configurada.");
+
+builder.Services.AddResend(options =>
+{
+    options.ApiToken = resendApiKey;
+});
 
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>

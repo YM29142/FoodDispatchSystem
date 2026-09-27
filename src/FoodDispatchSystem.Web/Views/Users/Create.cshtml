@@ -38,6 +38,43 @@
                         <div asp-validation-summary="ModelOnly"
                              class="text-danger mb-3">
                         </div>
+                        <div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+
+        <label asp-for="FirstName"
+               class="form-label fw-semibold">
+        </label>
+
+        <input asp-for="FirstName"
+               class="form-control"
+               autocomplete="given-name"
+               placeholder="Nombre" />
+
+        <span asp-validation-for="FirstName"
+              class="text-danger">
+        </span>
+
+    </div>
+
+    <div class="col-md-6">
+
+        <label asp-for="LastName"
+               class="form-label fw-semibold">
+        </label>
+
+        <input asp-for="LastName"
+               class="form-control"
+               autocomplete="family-name"
+               placeholder="Apellido" />
+
+        <span asp-validation-for="LastName"
+              class="text-danger">
+        </span>
+
+    </div>
+
+</div>
 
                         <div class="mb-3">
 
@@ -97,10 +134,27 @@
                                        class="form-label fw-semibold">
                                 </label>
 
-                                <input asp-for="Password"
-                                       class="form-control"
-                                       autocomplete="new-password"
-                                       placeholder="Mínimo 8 caracteres" />
+                                <div class="input-group">
+    <input asp-for="Password"
+           class="form-control"
+           autocomplete="new-password"
+           placeholder="Mínimo 8 caracteres" />
+
+    <button type="button"
+            class="btn btn-outline-secondary"
+            id="togglePassword"
+            aria-label="Mostrar contraseña"
+            aria-pressed="false">
+        <svg xmlns="http://www.w3.org/2000/svg"
+     width="18"
+     height="18"
+     viewBox="0 0 16 16"
+     fill="currentColor">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/>
+</svg>
+    </button>
+</div>
 
                                 <span asp-validation-for="Password"
                                       class="text-danger">
@@ -114,10 +168,27 @@
                                        class="form-label fw-semibold">
                                 </label>
 
-                                <input asp-for="ConfirmPassword"
-                                       class="form-control"
-                                       autocomplete="new-password"
-                                       placeholder="Repita la contraseña" />
+                               <div class="input-group">
+    <input asp-for="ConfirmPassword"
+           class="form-control"
+           autocomplete="new-password"
+           placeholder="Repita la contraseña" />
+
+    <button type="button"
+            class="btn btn-outline-secondary"
+            id="toggleConfirmPassword"
+            aria-label="Mostrar contraseña"
+            aria-pressed="false">
+        <svg xmlns="http://www.w3.org/2000/svg"
+     width="18"
+     height="18"
+     viewBox="0 0 16 16"
+     fill="currentColor">
+    <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.134 13.134 0 0 1 1.172 8z"/>
+    <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM6.5 8a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0z"/>
+</svg>
+    </button>
+</div>
 
                                 <span asp-validation-for="ConfirmPassword"
                                       class="text-danger">
@@ -159,4 +230,41 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        function configurePasswordToggle(inputId, buttonId) {
+            const input = document.getElementById(inputId);
+            const button = document.getElementById(buttonId);
+
+            if (!input || !button) {
+                return;
+            }
+
+            button.addEventListener("click", function () {
+                const isPassword = input.type === "password";
+
+                input.type = isPassword
+                    ? "text"
+                    : "password";
+
+                button.setAttribute(
+                    "aria-pressed",
+                    isPassword.toString());
+
+                button.setAttribute(
+                    "aria-label",
+                    isPassword
+                        ? "Ocultar contraseña"
+                        : "Mostrar contraseña");
+            });
+        }
+
+        configurePasswordToggle(
+            "Password",
+            "togglePassword");
+
+        configurePasswordToggle(
+            "ConfirmPassword",
+            "toggleConfirmPassword");
+    </script>
 }

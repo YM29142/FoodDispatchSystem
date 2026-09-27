@@ -4,6 +4,20 @@ namespace FoodDispatchSystem.Web.ViewModels
 {
     public class UserCreateViewModel
     {
+        [Required(ErrorMessage = "El nombre es obligatorio.")]
+        [StringLength(
+            100,
+            ErrorMessage = "El nombre no puede superar 100 caracteres.")]
+        [Display(Name = "Nombre")]
+        public string FirstName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "El apellido es obligatorio.")]
+        [StringLength(
+            100,
+            ErrorMessage = "El apellido no puede superar 100 caracteres.")]
+        [Display(Name = "Apellido")]
+        public string LastName { get; set; } = string.Empty;
+
         [Required(ErrorMessage = "El correo electrónico es obligatorio.")]
         [EmailAddress(ErrorMessage = "Ingrese un correo electrónico válido.")]
         [Display(Name = "Correo electrónico")]

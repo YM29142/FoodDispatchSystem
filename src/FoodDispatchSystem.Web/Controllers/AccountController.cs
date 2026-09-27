@@ -3,6 +3,7 @@ using FoodDispatchSystem.Web.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using FoodDispatchSystem.Web.Services;
 
 namespace FoodDispatchSystem.Web.Controllers;
 
@@ -10,19 +11,23 @@ public class AccountController : Controller
 {
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly UserManager<ApplicationUser> _userManager;
-
     private readonly ILogger<AccountController> _logger;
+    private readonly EmailService _emailService;
 
     public AccountController(
      SignInManager<ApplicationUser> signInManager,
      UserManager<ApplicationUser> userManager,
-     ILogger<AccountController> logger)
+     ILogger<AccountController> logger,
+    EmailService emailService)
+
     {
         _signInManager = signInManager;
         _userManager = userManager;
         _logger = logger;
+        _emailService = emailService;
     }
 
+   
     [AllowAnonymous]
     public IActionResult Login(string? returnUrl = null)
     {
@@ -69,9 +74,21 @@ public class AccountController : Controller
                 },
                 Request.Scheme);
 
-            _logger.LogInformation(
-                "Password reset link generated for development: {ResetUrl}",
-                resetUrl);
+            if (!string.IsNullOrWhiteSpace(resetUrl))
+            {
+                try
+                {
+                    await _emailService.SendPasswordResetEmailAsync(
+                        model.Email,
+                        resetUrl);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(
+                        ex,
+                        "No fue posible enviar el correo de recuperación.");
+                }
+            }
         }
 
         return RedirectToAction(

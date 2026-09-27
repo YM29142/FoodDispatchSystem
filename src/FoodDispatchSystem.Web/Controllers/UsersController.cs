@@ -42,6 +42,8 @@ namespace FoodDispatchSystem.Web.Controllers
                 model.Add(new UserListViewModel
                 {
                     Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
                     Email = user.Email ?? string.Empty,
                     Role = role,
                     IsActive = !isLocked
@@ -81,6 +83,8 @@ namespace FoodDispatchSystem.Web.Controllers
             }
 
             var normalizedEmail = model.Email.Trim();
+            var firstName = model.FirstName.Trim();
+            var lastName = model.LastName.Trim();
 
             var existingUser = await _userManager
                 .FindByEmailAsync(normalizedEmail);
@@ -98,9 +102,10 @@ namespace FoodDispatchSystem.Web.Controllers
             {
                 UserName = normalizedEmail,
                 Email = normalizedEmail,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                FirstName = firstName,
+                LastName = lastName
             };
-
             var createResult = await _userManager.CreateAsync(
                 user,
                 model.Password);
@@ -137,7 +142,7 @@ namespace FoodDispatchSystem.Web.Controllers
             }
 
             TempData["SuccessMessage"] =
-                $"El empleado {normalizedEmail} fue creado correctamente.";
+     $"El empleado {firstName} {lastName} fue creado correctamente.";
 
             return RedirectToAction(nameof(Index));
         }
