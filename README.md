@@ -74,25 +74,17 @@ Current roles include:
 
 
 
-- \*\*Administrator\*\* â€” system administration, employees, reports and configuration
-
-- \*\*Cashier\*\* â€” order creation and management
-
-- \*\*Kitchen\*\* â€” preparation workflow
-
-- \*\*Dispatch\*\* â€” order delivery workflow
-
+- **Administrator** - system administration, employees, reports and configuration
+- **Cashier** - order creation and management
+- **Kitchen** - preparation workflow
+- **Dispatch** - order delivery workflow
 
 
 ## Order Workflow
 
-
-
 Orders move through a controlled status workflow:
 
-
-
-`Pending â†’ Preparing â†’ Ready â†’ Delivered`
+`Pending -> Preparing -> Ready -> Delivered`
 
 
 
@@ -116,21 +108,20 @@ FoodDispatchSystem
 
 - src/FoodDispatchSystem.Web
 
-&#x20; - Controllers
+ - Controllers
 
-&#x20; - Data
+ - Data
 
-&#x20; - Migrations
+ - Migrations
 
-&#x20; - Models
+ - Models
 
-&#x20; - Services
+ - Services
+ - ViewModels
 
-&#x20; - ViewModels
+ - Views
 
-&#x20; - Views
-
-&#x20; - wwwroot
+- wwwroot
 
 - FoodDispatchSystem.Tests
 
