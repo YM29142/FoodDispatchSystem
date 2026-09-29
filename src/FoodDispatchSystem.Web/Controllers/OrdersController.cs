@@ -98,6 +98,26 @@ public class OrdersController : Controller
 
             return View(model);
         }
+        if (model.OrderType == OrderType.DineIn)
+        {
+            if (!model.TableNumber.HasValue || model.TableNumber.Value < 1)
+            {
+                ModelState.AddModelError(
+                    nameof(model.TableNumber),
+                    "Debe indicar un número de mesa válido.");
+
+                ViewBag.Products = await _context.Products
+                    .Where(p => p.IsActive)
+                    .OrderBy(p => p.Name)
+                    .ToListAsync();
+
+                return View(model);
+            }
+        }
+        else
+        {
+            model.TableNumber = null;
+        }
         var userId = User.FindFirstValue(
     ClaimTypes.NameIdentifier);
 
@@ -115,6 +135,8 @@ public class OrdersController : Controller
             OrderNumber = $"ORD-{localNow:yyMMdd}-{Guid.NewGuid().ToString("N")[..8].ToUpperInvariant()}",
             CreatedAt = utcNow,
             Status = OrderStatus.Pending,
+            OrderType = model.OrderType,
+            TableNumber = model.TableNumber,
 
             CreatedByUserId = userId,
             CreatedByEmail = userEmail,

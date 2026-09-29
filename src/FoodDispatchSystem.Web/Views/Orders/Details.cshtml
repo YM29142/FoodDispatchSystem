@@ -83,6 +83,33 @@
                 </div>
             </div>
         }
+        <div>
+    <span class="order-summary-label">
+        Tipo de pedido
+    </span>
+
+    <div class="order-summary-value">
+        @if (Model.OrderType == OrderType.DineIn)
+        {
+            if (Model.TableNumber.HasValue)
+            {
+                <span>Mesa @Model.TableNumber.Value</span>
+            }
+            else
+            {
+                <span>Mesa</span>
+            }
+        }
+        else if (Model.OrderType == OrderType.Takeaway)
+        {
+            <span>Para llevar</span>
+        }
+        else if (Model.OrderType == OrderType.Delivery)
+        {
+            <span>Delivery</span>
+        }
+    </div>
+</div>
 
         <div>
             <span class="order-summary-label">

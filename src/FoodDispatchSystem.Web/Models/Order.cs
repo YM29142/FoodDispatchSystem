@@ -13,6 +13,8 @@ public class Order
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
+    public OrderType OrderType { get; set; } = OrderType.DineIn;
+    public int? TableNumber { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Total { get; set; }

@@ -32,7 +32,27 @@
     <div asp-validation-summary="ModelOnly"
          class="text-danger">
     </div>
+    <div class="mb-3">
+    <label asp-for="OrderType" class="form-label">Tipo de pedido</label>
 
+    <select asp-for="OrderType"
+            class="form-select"
+            asp-items="Html.GetEnumSelectList<OrderType>()">
+    </select>
+</div>
+
+<div class="mb-3" id="table-number-group">
+    <label asp-for="TableNumber" class="form-label">Número de mesa</label>
+
+    <input asp-for="TableNumber"
+           type="number"
+           min="1"
+           class="form-control"
+           placeholder="Ej. 5" />
+
+    <span asp-validation-for="TableNumber"
+          class="text-danger"></span>
+</div>
     <div id="items-container">
 
         @for (int i = 0; i < Model.Items.Count; i++)
@@ -121,6 +141,38 @@
 
 <script>
     const container = document.getElementById("items-container");
+    const orderTypeSelect =
+    document.getElementById("OrderType");
+
+const tableNumberGroup =
+    document.getElementById("table-number-group");
+
+const tableNumberInput =
+    document.getElementById("TableNumber");
+
+function toggleTableNumber() {
+
+    const isDineIn =
+        orderTypeSelect.value === "1";
+
+    if (isDineIn) {
+        tableNumberGroup.classList.remove("d-none");
+        tableNumberInput.disabled = false;
+    }
+    else {
+        tableNumberGroup.classList.add("d-none");
+
+        tableNumberInput.value = "";
+        tableNumberInput.disabled = true;
+    }
+}
+
+orderTypeSelect.addEventListener(
+    "change",
+    toggleTableNumber
+);
+
+toggleTableNumber();
 
     function reindexItems() {
 

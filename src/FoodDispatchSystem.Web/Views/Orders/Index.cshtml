@@ -83,17 +83,17 @@
 <div class="orders-table-card">
     <div class="table-responsive">
         <table class="table align-middle mb-0 orders-table">
-    <thead>
-        <tr>
-            <th>Pedido</th>
-            <th>Fecha y hora</th>
-            <th>Productos</th>
-            <th>Estado</th>
-            <th>Total</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-  
+ <thead>
+    <tr>
+        <th>Pedido</th>
+        <th>Fecha y hora</th>
+        <th>Productos</th>
+        <th>Tipo de pedido</th>
+        <th>Estado</th>
+        <th>Total</th>
+        <th>Acciones</th>
+    </tr>
+</thead>
 
     <tbody>
         @foreach (var order in Model)
@@ -111,6 +111,24 @@
                 <td>
                     @order.OrderDetails.Sum(d => d.Quantity)
                 </td>
+                <td>
+    @if (order.OrderType == OrderType.DineIn)
+    {
+        <span>
+            @(order.TableNumber.HasValue
+                ? $"Mesa {order.TableNumber.Value}"
+                : "Mesa")
+        </span>
+    }
+    else if (order.OrderType == OrderType.Takeaway)
+    {
+        <span>Para llevar</span>
+    }
+    else if (order.OrderType == OrderType.Delivery)
+    {
+        <span>Delivery</span>
+    }
+</td>
 
                 <td>
                     @switch (order.Status)
