@@ -230,12 +230,62 @@
         </span>
     </div>
 
-</div></div>
+</div>
 
-<a asp-action="Index"
-   class="btn order-back-btn">
-    ← Volver a pedidos
-</a>
+<div class="d-flex gap-2 flex-wrap">
+
+    @if (Model.OrderType == OrderType.DineIn &&
+         Model.Status != OrderStatus.Delivered &&
+         Model.Status != OrderStatus.Cancelled &&
+         (User.IsInRole("Administrador") ||
+          User.IsInRole("Mesero")))
+    {
+        <a asp-action="AddItems"
+           asp-route-id="@Model.Id"
+           class="btn btn-primary">
+            + Agregar productos
+        </a>
+    }
+
+    @if (Model.OrderType == OrderType.DineIn &&
+         Model.Status != OrderStatus.Delivered &&
+         Model.Status != OrderStatus.Cancelled &&
+         (User.IsInRole("Administrador") ||
+          User.IsInRole("Cajero") ||
+          User.IsInRole("Mesero")))
+    {
+        <form asp-action="ToggleServiceCharge"
+              method="post"
+              class="d-inline">
+
+            <input type="hidden"
+                   name="id"
+                   value="@Model.Id" />
+
+            @if (Model.HasServiceCharge)
+            {
+                <button type="submit"
+                        class="btn btn-outline-danger">
+                    Quitar 10% de servicio
+                </button>
+            }
+            else
+            {
+                <button type="submit"
+                        class="btn btn-outline-success">
+                    Agregar 10% de servicio
+                </button>
+            }
+
+        </form>
+    }
+
+    <a asp-action="Index"
+       class="btn order-back-btn">
+        ← Volver a pedidos
+    </a>
+
+</div>
 @if (User.IsInRole("Administrador"))
 {
     <div class="card shadow-sm border-0 mt-4">

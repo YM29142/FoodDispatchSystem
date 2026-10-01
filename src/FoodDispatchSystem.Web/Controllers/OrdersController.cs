@@ -153,6 +153,8 @@ public class OrdersController : Controller
             Status = OrderStatus.Pending,
             OrderType = model.OrderType,
             TableNumber = model.TableNumber,
+            HasServiceCharge = model.IncludeTip,
+
             CreatedByUserId = userId,
             CreatedByEmail = userEmail,
         };
@@ -284,6 +286,306 @@ public class OrdersController : Controller
         }
 
         return View(order);
+    }
+
+    [HttpGet]
+    [Authorize(Roles = "Administrador,Mesero")]
+    public async Task<IActionResult> AddItems(int id)
+    {
+        var order = await _context.Orders
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        // Por ahora esta función es únicamente para pedidos de mesa.
+        if (order.OrderType != OrderType.DineIn)
+        {
+            return BadRequest();
+        }
+
+        // No se puede modificar un pedido ya cerrado.
+        if (order.Status == OrderStatus.Delivered ||
+            order.Status == OrderStatus.Cancelled)
+        {
+            return BadRequest();
+        }
+
+        // El Mesero solo puede modificar sus propios pedidos.
+        if (User.IsInRole("Mesero"))
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId) ||
+                order.CreatedByUserId != userId)
+            {
+                return NotFound();
+            }
+        }
+
+        var products = await _context.Products
+            .Where(p => p.IsActive)
+            .OrderBy(p => p.Name)
+            .ToListAsync();
+
+        ViewBag.Products = products;
+
+        var model = new OrderAddItemsViewModel
+        {
+            OrderId = order.Id,
+            OrderNumber = order.OrderNumber,
+            TableNumber = order.TableNumber
+        };
+
+        model.Items.Add(new OrderItemInputModel
+        {
+            Quantity = 1
+        });
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrador,Mesero")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddItems(
+    OrderAddItemsViewModel model)
+    {
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .FirstOrDefaultAsync(o => o.Id == model.OrderId);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        // Esta función solo aplica a pedidos de mesa.
+        if (order.OrderType != OrderType.DineIn)
+        {
+            return BadRequest();
+        }
+
+        // Pedidos cerrados ya no pueden modificarse.
+        if (order.Status == OrderStatus.Delivered ||
+            order.Status == OrderStatus.Cancelled)
+        {
+            return BadRequest();
+        }
+
+        // Un mesero solo puede modificar sus propios pedidos.
+        if (User.IsInRole("Mesero"))
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId) ||
+                order.CreatedByUserId != userId)
+            {
+                return NotFound();
+            }
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Products = await _context.Products
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+
+            model.OrderNumber = order.OrderNumber;
+            model.TableNumber = order.TableNumber;
+
+            return View(model);
+        }
+
+        var consolidatedItems =
+            _orderItemService.ConsolidateItems(model.Items);
+
+        if (_orderItemService.ExceedsMaximumQuantity(model.Items))
+        {
+            ModelState.AddModelError(
+                "",
+                "La cantidad total de un producto no puede superar 100.");
+
+            ViewBag.Products = await _context.Products
+                .Where(p => p.IsActive)
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+
+            model.OrderNumber = order.OrderNumber;
+            model.TableNumber = order.TableNumber;
+
+            return View(model);
+        }
+
+        await using var transaction =
+            await _context.Database.BeginTransactionAsync();
+
+        try
+        {
+            foreach (var item in consolidatedItems)
+            {
+                var product = await _context.Products
+                    .FirstOrDefaultAsync(p =>
+                        p.Id == item.ProductId &&
+                        p.IsActive);
+
+                if (product == null)
+                {
+                    await transaction.RollbackAsync();
+
+                    ModelState.AddModelError(
+                        "",
+                        "Uno de los productos seleccionados no existe o está inactivo.");
+
+                    ViewBag.Products = await _context.Products
+                        .Where(p => p.IsActive)
+                        .OrderBy(p => p.Name)
+                        .ToListAsync();
+
+                    model.OrderNumber = order.OrderNumber;
+                    model.TableNumber = order.TableNumber;
+
+                    return View(model);
+                }
+
+                var existingQuantity =
+                    order.OrderDetails
+                        .Where(d => d.ProductId == product.Id)
+                        .Sum(d => d.Quantity);
+
+                if (existingQuantity + item.Quantity > 100)
+                {
+                    await transaction.RollbackAsync();
+
+                    ModelState.AddModelError(
+                        "",
+                        $"La cantidad acumulada de {product.Name} no puede superar 100.");
+
+                    ViewBag.Products = await _context.Products
+                        .Where(p => p.IsActive)
+                        .OrderBy(p => p.Name)
+                        .ToListAsync();
+
+                    model.OrderNumber = order.OrderNumber;
+                    model.TableNumber = order.TableNumber;
+
+                    return View(model);
+                }
+
+                var subtotal =
+                    product.Price * item.Quantity;
+
+                order.OrderDetails.Add(
+                    new OrderDetail
+                    {
+                        ProductId = product.Id,
+                        Quantity = item.Quantity,
+                        UnitPrice = product.Price,
+                        Subtotal = subtotal
+                    });
+            }
+
+            var productsSubtotal =
+                order.OrderDetails.Sum(d => d.Subtotal);
+
+            var serviceCharge =
+                order.HasServiceCharge
+                    ? decimal.Round(
+                        productsSubtotal * 0.10m,
+                        2,
+                        MidpointRounding.AwayFromZero)
+                    : 0m;
+
+            order.TipAmount = serviceCharge;
+            order.Total =
+                productsSubtotal + serviceCharge;
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            TempData["SuccessMessage"] =
+                $"Productos agregados correctamente a {order.OrderNumber}.";
+
+            return RedirectToAction(
+                nameof(Details),
+                new { id = order.Id });
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+    }
+
+    [HttpPost]
+    [Authorize(Roles = "Administrador,Cajero,Mesero")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ToggleServiceCharge(int id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.OrderDetails)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        if (order.OrderType != OrderType.DineIn)
+        {
+            return BadRequest();
+        }
+
+        if (order.Status == OrderStatus.Delivered ||
+            order.Status == OrderStatus.Cancelled)
+        {
+            return BadRequest();
+        }
+
+        if (User.IsInRole("Mesero"))
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId) ||
+                order.CreatedByUserId != userId)
+            {
+                return NotFound();
+            }
+        }
+
+        order.HasServiceCharge =
+            !order.HasServiceCharge;
+
+        var productsSubtotal =
+            order.OrderDetails.Sum(d => d.Subtotal);
+
+        order.TipAmount =
+            order.HasServiceCharge
+                ? decimal.Round(
+                    productsSubtotal * 0.10m,
+                    2,
+                    MidpointRounding.AwayFromZero)
+                : 0m;
+
+        order.Total =
+            productsSubtotal + order.TipAmount;
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] =
+            order.HasServiceCharge
+                ? "Servicio del 10% agregado correctamente."
+                : "Servicio del 10% retirado correctamente.";
+
+        return RedirectToAction(
+            nameof(Details),
+            new { id = order.Id });
     }
 
 

@@ -15,6 +15,7 @@ public class Order
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public OrderType OrderType { get; set; } = OrderType.DineIn;
     public int? TableNumber { get; set; }
+    public bool HasServiceCharge { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal TipAmount { get; set; }
