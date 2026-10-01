@@ -17,15 +17,15 @@
             Gestiona y da seguimiento a los pedidos.
         </p>
     </div>
-
-    @if (User.IsInRole("Administrador") ||
-         User.IsInRole("Cajero"))
-    {
-        <a asp-action="Create"
-           class="btn quick-action-btn quick-action-primary">
-            + Nuevo pedido
-        </a>
-    }
+@if (User.IsInRole("Administrador") ||
+    User.IsInRole("Cajero") ||
+    User.IsInRole("Mesero"))
+{
+    <a asp-action="Create"
+       class="btn quick-action-btn quick-action-primary">
+        + Nuevo pedido
+    </a>
+}
 
 </div>
 @if (ViewBag.SelectedStatus != null || ViewBag.TodayFilter == true)

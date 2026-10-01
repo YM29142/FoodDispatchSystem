@@ -53,37 +53,57 @@
     <span asp-validation-for="TableNumber"
           class="text-danger"></span>
 </div>
-    <div id="items-container">
 
-        @for (int i = 0; i < Model.Items.Count; i++)
-        {
-            <div class="row mb-3 order-item">
+<div class="mb-3 service-option"
+     id="service-option-group">
+    <div class="form-check form-switch">
+        <input asp-for="IncludeTip"
+               class="form-check-input service-switch"
+               type="checkbox"
+               role="switch" />
 
-                <div class="col-md-6">
-                    <label class="form-label">
-                        Producto
-                    </label>
+        <label asp-for="IncludeTip"
+               class="form-check-label fw-semibold">
+            Agregar 10% de servicio
+        </label>
+    </div>
 
-                    <select asp-for="Items[i].ProductId"
-                            class="form-select product-select">
+    <div class="form-text">
+        Opcional. El sistema calculará automáticamente el 10% sobre el subtotal de productos.
+    </div>
+</div>
 
-                        <option value="">
-                            Seleccione un producto
+<div id="items-container">
+
+    @for (int i = 0; i < Model.Items.Count; i++)
+    {
+        <div class="row mb-3 order-item">
+
+            <div class="col-md-6">
+                <label class="form-label">
+                    Producto
+                </label>
+
+                <select asp-for="Items[i].ProductId"
+                        class="form-select product-select">
+
+                    <option value="">
+                        Seleccione un producto
+                    </option>
+
+                    @foreach (var product in products)
+                    {
+                        <option value="@product.Id">
+                            @product.Name - @product.Price.ToString("C")
                         </option>
+                    }
 
-                        @foreach (var product in products)
-                        {
-                            <option value="@product.Id">
-                                @product.Name - @product.Price.ToString("C")
-                            </option>
-                        }
+                </select>
 
-                    </select>
-
-                    <span asp-validation-for="Items[i].ProductId"
-                          class="text-danger product-validation">
-                    </span>
-                </div>
+                <span asp-validation-for="Items[i].ProductId"
+                      class="text-danger product-validation">
+                </span>
+            </div>
 
                 <div class="col-md-3">
                     <label class="form-label">
@@ -140,42 +160,60 @@
 </div>
 
 <script>
-    const container = document.getElementById("items-container");
+    const container =
+        document.getElementById("items-container");
+
     const orderTypeSelect =
-    document.getElementById("OrderType");
+        document.getElementById("OrderType");
 
-const tableNumberGroup =
-    document.getElementById("table-number-group");
+    const tableNumberGroup =
+        document.getElementById("table-number-group");
 
-const tableNumberInput =
-    document.getElementById("TableNumber");
+    const tableNumberInput =
+        document.getElementById("TableNumber");
 
-function toggleTableNumber() {
+    const serviceOptionGroup =
+        document.getElementById("service-option-group");
 
-    const isDineIn =
-        orderTypeSelect.value === "1";
+    const includeTipInput =
+        document.getElementById("IncludeTip");
 
-    if (isDineIn) {
-        tableNumberGroup.classList.remove("d-none");
-        tableNumberInput.disabled = false;
+    function toggleOrderOptions() {
+
+        const isDineIn =
+            orderTypeSelect.value === "1";
+
+        if (isDineIn) {
+
+            // Mesa
+            tableNumberGroup.classList.remove("d-none");
+            tableNumberInput.disabled = false;
+
+            serviceOptionGroup.classList.remove("d-none");
+            includeTipInput.disabled = false;
+        }
+        else {
+
+            // Para llevar o Delivery
+            tableNumberGroup.classList.add("d-none");
+            tableNumberInput.value = "";
+            tableNumberInput.disabled = true;
+
+            serviceOptionGroup.classList.add("d-none");
+
+            includeTipInput.checked = false;
+            includeTipInput.disabled = true;
+        }
     }
-    else {
-        tableNumberGroup.classList.add("d-none");
 
-        tableNumberInput.value = "";
-        tableNumberInput.disabled = true;
-    }
-}
+    orderTypeSelect.addEventListener(
+        "change",
+        toggleOrderOptions
+    );
 
-orderTypeSelect.addEventListener(
-    "change",
-    toggleTableNumber
-);
-
-toggleTableNumber();
+    toggleOrderOptions();
 
     function reindexItems() {
-
         const items = container.querySelectorAll(".order-item");
 
         items.forEach((item, index) => {

@@ -36,6 +36,20 @@ public class OrdersController : Controller
                 .ThenInclude(od => od.Product)
             .AsQueryable();
 
+        if (User.IsInRole("Mesero"))
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Forbid();
+            }
+
+            query = query.Where(o =>
+                o.CreatedByUserId == userId);
+        }
+
         if (status.HasValue)
         {
             query = query.Where(o => o.Status == status.Value);
@@ -61,8 +75,7 @@ public class OrdersController : Controller
 
         return View(orders);
     }
-
-    [Authorize(Roles = "Administrador,Cajero")]
+    [Authorize(Roles = "Administrador,Cajero,Mesero")]
     public async Task<IActionResult> Create()
     {
         var products = await _context.Products
@@ -85,7 +98,7 @@ public class OrdersController : Controller
     }
 
     [HttpPost]
-    [Authorize(Roles = "Administrador,Cajero")]
+    [Authorize(Roles = "Administrador,Cajero,Mesero")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Create(OrderCreateViewModel model)
     {
@@ -117,7 +130,10 @@ public class OrdersController : Controller
         else
         {
             model.TableNumber = null;
+            model.IncludeTip = false;
         }
+
+
         var userId = User.FindFirstValue(
     ClaimTypes.NameIdentifier);
 
@@ -137,7 +153,6 @@ public class OrdersController : Controller
             Status = OrderStatus.Pending,
             OrderType = model.OrderType,
             TableNumber = model.TableNumber,
-
             CreatedByUserId = userId,
             CreatedByEmail = userEmail,
         };
@@ -196,8 +211,15 @@ public class OrdersController : Controller
 
         }
 
+        var tipAmount = model.IncludeTip
+       ? decimal.Round(
+           total * 0.10m,
+           2,
+           MidpointRounding.AwayFromZero)
+       : 0m;
 
-        order.Total = total;
+        order.TipAmount = tipAmount;
+        order.Total = total + tipAmount;
 
         await using var transaction =
       await _context.Database.BeginTransactionAsync();
@@ -233,10 +255,27 @@ public class OrdersController : Controller
 
     public async Task<IActionResult> Details(int id)
     {
-        var order = await _context.Orders
+        var query = _context.Orders
             .Include(o => o.OrderDetails)
                 .ThenInclude(d => d.Product)
             .Include(o => o.StatusHistory)
+            .AsQueryable();
+
+        if (User.IsInRole("Mesero"))
+        {
+            var userId = User.FindFirstValue(
+                ClaimTypes.NameIdentifier);
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                return Forbid();
+            }
+
+            query = query.Where(o =>
+                o.CreatedByUserId == userId);
+        }
+
+        var order = await query
             .FirstOrDefaultAsync(o => o.Id == id);
 
         if (order == null)
@@ -247,8 +286,9 @@ public class OrdersController : Controller
         return View(order);
     }
 
-    
+
     [HttpPost]
+    [Authorize(Roles = "Administrador,Cajero,Cocina,Despacho")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateStatus(
      int id,

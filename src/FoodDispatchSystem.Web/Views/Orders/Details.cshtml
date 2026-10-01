@@ -190,15 +190,47 @@
     </div>
 </div>
 
-<div class="order-total-summary">
-    <span class="order-total-label">
-        Total del pedido
-    </span>
+@{
+    var productsSubtotal =
+        Model.OrderDetails.Sum(d => d.Subtotal);
+}
 
-    <span class="order-total-value">
-        @Model.Total.ToString("C")
-    </span>
-</div>
+<div class="text-end mb-3">
+
+    <div class="mb-1">
+        <span class="text-muted me-3">
+            Subtotal productos
+        </span>
+
+        <strong>
+            @productsSubtotal.ToString("C")
+        </strong>
+    </div>
+
+    @if (Model.TipAmount > 0)
+    {
+        <div class="mb-2">
+            <span class="text-muted me-3">
+                Servicio 10%
+            </span>
+
+            <strong>
+                @Model.TipAmount.ToString("C")
+            </strong>
+        </div>
+    }
+
+    <div class="order-total-summary">
+        <span class="order-total-label">
+            Total del pedido
+        </span>
+
+        <span class="order-total-value">
+            @Model.Total.ToString("C")
+        </span>
+    </div>
+
+</div></div>
 
 <a asp-action="Index"
    class="btn order-back-btn">

@@ -29,6 +29,12 @@ public class HomeController : Controller
     }
     public async Task<IActionResult> Index()
     {
+        if (User.IsInRole("Mesero"))
+        {
+            return RedirectToAction(
+                "Index",
+                "Orders");
+        }
         var localToday = _businessTimeService.LocalToday;
 
         var (todayUtc, tomorrowUtc) =

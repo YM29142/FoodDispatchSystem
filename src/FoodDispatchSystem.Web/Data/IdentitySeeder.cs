@@ -12,14 +12,14 @@ public static class IdentitySeeder
 
         var roleManager = scope.ServiceProvider
             .GetRequiredService<RoleManager<IdentityRole>>();
-
         string[] roles =
         {
-            "Administrador",
-            "Cajero",
-            "Cocina",
-            "Despacho"
-        };
+    "Administrador",
+    "Cajero",
+    "Cocina",
+    "Despacho",
+    "Mesero"
+};
 
         foreach (var role in roles)
         {

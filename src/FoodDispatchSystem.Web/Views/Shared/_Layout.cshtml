@@ -54,14 +54,16 @@
                     <ul class="navbar-nav flex-grow-1">
 
                         @if (User.Identity?.IsAuthenticated == true)
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark"
-                                   asp-controller="Home"
-                                   asp-action="Index">
-                                    Dashboard
-                                </a>
-                            </li>
+                        {@if (!User.IsInRole("Mesero"))
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark"
+                                       asp-controller="Home"
+                                       asp-action="Index">
+                                        Dashboard
+                                    </a>
+                                </li>
+                            }
 
                             <li class="nav-item">
                                 <a class="nav-link text-dark"

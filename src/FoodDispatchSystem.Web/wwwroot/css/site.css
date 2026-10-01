@@ -632,3 +632,20 @@ input[type="password"]::-ms-reveal,
 input[type="password"]::-ms-clear {
     display: none;
 }
+.service-option {
+    padding: 14px 16px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.service-switch {
+    width: 2.8rem !important;
+    height: 1.4rem;
+    cursor: pointer;
+}
+
+    .service-switch:checked {
+        background-color: #198754;
+        border-color: #198754;
+    }

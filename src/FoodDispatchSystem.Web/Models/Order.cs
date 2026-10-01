@@ -17,6 +17,8 @@ public class Order
     public int? TableNumber { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
+    public decimal TipAmount { get; set; }
+    [Column(TypeName = "decimal(10,2)")]
     public decimal Total { get; set; }
 
     public ICollection<OrderDetail> OrderDetails { get; set; }

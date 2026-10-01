@@ -64,11 +64,12 @@ namespace FoodDispatchSystem.Web.Controllers
             UserCreateViewModel model)
         {
             var allowedRoles = new[]
-            {
-        "Cajero",
-        "Cocina",
-        "Despacho"
-    };
+{
+    "Cajero",
+    "Cocina",
+    "Despacho",
+    "Mesero"
+};
 
             if (!allowedRoles.Contains(model.Role))
             {
@@ -297,11 +298,12 @@ namespace FoodDispatchSystem.Web.Controllers
             }
 
             var allowedRoles = new[]
-            {
-        "Cajero",
-        "Cocina",
-        "Despacho"
-    };
+  {
+    "Cajero",
+    "Cocina",
+    "Despacho",
+    "Mesero"
+};
 
             if (!allowedRoles.Contains(model.Role))
             {
