@@ -192,6 +192,9 @@ namespace FoodDispatchSystem.Web.Migrations
                     b.Property<int>("OrderType")
                         .HasColumnType("int");
 
+                    b.Property<int>("PaymentStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 

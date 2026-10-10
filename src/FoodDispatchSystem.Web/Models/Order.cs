@@ -19,6 +19,8 @@ public class Order
     public bool HasServiceCharge { get; set; }
     public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
+    public PaymentStatus PaymentStatus { get; set; } = PaymentStatus.Pending;
+
     [Column(TypeName = "decimal(10,2)")]
     public decimal TipAmount { get; set; }
    

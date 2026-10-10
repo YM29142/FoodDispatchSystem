@@ -255,6 +255,133 @@ public class OrdersController : Controller
         return RedirectToAction(nameof(Create));
     }
 
+    [Authorize(Roles = "Administrador,Cajero")]
+    [HttpGet]
+    public async Task<IActionResult> Pay(int id)
+    {
+        var order = await _context.Orders
+            .Include(o => o.Payments)
+            .FirstOrDefaultAsync(o => o.Id == id);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        var paidAmount = order.Payments.Sum(p => p.Amount);
+        var remainingAmount = order.Total - paidAmount;
+
+        if (remainingAmount < 0)
+        {
+            remainingAmount = 0;
+        }
+
+        var model = new OrderPaymentViewModel
+        {
+            OrderId = order.Id,
+            OrderNumber = order.OrderNumber,
+            OrderTotal = order.Total,
+            PaidAmount = paidAmount,
+            RemainingAmount = remainingAmount,
+            Amount = remainingAmount
+        };
+
+        return View(model);
+    }
+
+    [Authorize(Roles = "Administrador,Cajero")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Pay(OrderPaymentViewModel model)
+    {
+        var order = await _context.Orders
+            .Include(o => o.Payments)
+            .FirstOrDefaultAsync(o => o.Id == model.OrderId);
+
+        if (order == null)
+        {
+            return NotFound();
+        }
+
+        var paidAmount = order.Payments.Sum(p => p.Amount);
+        var remainingAmount = order.Total - paidAmount;
+
+        if (remainingAmount <= 0 || order.PaymentStatus == PaymentStatus.Paid)
+        {
+            TempData["ErrorMessage"] = "Este pedido ya está completamente pagado.";
+            return RedirectToAction(nameof(Details), new { id = order.Id });
+        }
+
+        // Volvemos a cargar estos valores desde la BD.
+        // Nunca confiamos en los totales enviados por el navegador.
+        model.OrderNumber = order.OrderNumber;
+        model.OrderTotal = order.Total;
+        model.PaidAmount = paidAmount;
+        model.RemainingAmount = remainingAmount;
+
+        if (model.Amount <= 0)
+        {
+            ModelState.AddModelError(
+                nameof(model.Amount),
+                "El monto debe ser mayor que cero.");
+        }
+
+        if (model.Amount > remainingAmount)
+        {
+            ModelState.AddModelError(
+                nameof(model.Amount),
+                "El monto no puede ser mayor que el saldo pendiente.");
+        }
+
+        if (!Enum.IsDefined(typeof(PaymentMethod), model.Method))
+        {
+            ModelState.AddModelError(
+                nameof(model.Method),
+                "Seleccione un método de pago válido.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var userId = User.FindFirst(
+            System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+        var userEmail = User.Identity?.Name;
+
+        if (string.IsNullOrWhiteSpace(userId) ||
+            string.IsNullOrWhiteSpace(userEmail))
+        {
+            return Forbid();
+        }
+
+        var payment = new Payment
+        {
+            OrderId = order.Id,
+            Method = model.Method,
+            Amount = model.Amount,
+            ReceivedByUserId = userId,
+            ReceivedByEmail = userEmail,
+            PaidAt = DateTime.UtcNow
+        };
+
+        _context.Payments.Add(payment);
+
+        var newPaidAmount = paidAmount + model.Amount;
+
+        if (newPaidAmount >= order.Total)
+        {
+            order.PaymentStatus = PaymentStatus.Paid;
+        }
+
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] =
+            $"Pago de ${model.Amount:N2} registrado correctamente.";
+
+        return RedirectToAction(nameof(Details), new { id = order.Id });
+    }
     public async Task<IActionResult> Details(int id)
     {
         var query = _context.Orders
@@ -347,6 +474,8 @@ public class OrdersController : Controller
 
         return View(model);
     }
+
+
 
     [HttpPost]
     [Authorize(Roles = "Administrador,Mesero")]

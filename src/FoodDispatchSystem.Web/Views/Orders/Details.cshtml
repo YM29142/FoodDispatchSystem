@@ -110,6 +110,24 @@
         }
     </div>
 </div>
+        <div>
+            <span class="order-summary-label">
+                Estado de pago
+            </span>
+
+            <div class="order-summary-value">
+                @if (Model.PaymentStatus == PaymentStatus.Paid)
+                {
+                    <span class="badge bg-success">Pagado</span>
+                }
+                else
+                {
+                    <span class="badge bg-warning text-dark">
+                        Pendiente de pago
+                    </span>
+                }
+            </div>
+        </div>
 
         <div>
             <span class="order-summary-label">
@@ -233,6 +251,17 @@
 </div>
 
 <div class="d-flex gap-2 flex-wrap">
+
+    @if ((User.IsInRole("Administrador") || User.IsInRole("Cajero"))
+    && Model.PaymentStatus != PaymentStatus.Paid)
+    {
+        <a asp-action="Pay"
+           asp-route-id="@Model.Id"
+           class="btn btn-success">
+            Cobrar
+        </a>
+    }
+ 
 
     @if (Model.OrderType == OrderType.DineIn &&
          Model.Status != OrderStatus.Delivered &&
