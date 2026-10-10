@@ -15,10 +15,13 @@ public class Order
     public OrderStatus Status { get; set; } = OrderStatus.Pending;
     public OrderType OrderType { get; set; } = OrderType.DineIn;
     public int? TableNumber { get; set; }
+    
     public bool HasServiceCharge { get; set; }
+    public ICollection<Payment> Payments { get; set; } = new List<Payment>();
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal TipAmount { get; set; }
+   
     [Column(TypeName = "decimal(10,2)")]
     public decimal Total { get; set; }
 

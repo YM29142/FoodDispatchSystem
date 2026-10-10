@@ -284,6 +284,42 @@ namespace FoodDispatchSystem.Web.Migrations
                     b.ToTable("OrderStatusHistories");
                 });
 
+            modelBuilder.Entity("FoodDispatchSystem.Web.Models.Payment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Method")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PaidAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("ReceivedByEmail")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("ReceivedByUserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Payments");
+                });
+
             modelBuilder.Entity("FoodDispatchSystem.Web.Models.Product", b =>
                 {
                     b.Property<int>("Id")
@@ -480,6 +516,17 @@ namespace FoodDispatchSystem.Web.Migrations
                     b.Navigation("Order");
                 });
 
+            modelBuilder.Entity("FoodDispatchSystem.Web.Models.Payment", b =>
+                {
+                    b.HasOne("FoodDispatchSystem.Web.Models.Order", "Order")
+                        .WithMany("Payments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("FoodDispatchSystem.Web.Models.Product", b =>
                 {
                     b.HasOne("FoodDispatchSystem.Web.Models.Category", "Category")
@@ -550,6 +597,8 @@ namespace FoodDispatchSystem.Web.Migrations
             modelBuilder.Entity("FoodDispatchSystem.Web.Models.Order", b =>
                 {
                     b.Navigation("OrderDetails");
+
+                    b.Navigation("Payments");
 
                     b.Navigation("StatusHistory");
                 });

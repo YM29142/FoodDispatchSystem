@@ -19,6 +19,8 @@ public class ApplicationDbContext
     public DbSet<Product> Products { get; set; } = null!;
 
     public DbSet<Order> Orders { get; set; } = null!;
+
+    public DbSet<Payment> Payments { get; set; }
     public DbSet<OrderDetail> OrderDetails { get; set; } = null!;
 
     public DbSet<Business> Businesses { get; set; } = null!;
@@ -78,6 +80,12 @@ public class ApplicationDbContext
         modelBuilder.Entity<Order>()
             .Property(o => o.CreatedByEmail)
             .HasMaxLength(256);
+
+        modelBuilder.Entity<Payment>()
+    .HasOne(p => p.Order)
+    .WithMany(o => o.Payments)
+    .HasForeignKey(p => p.OrderId)
+    .OnDelete(DeleteBehavior.Restrict);
     }
 
 
