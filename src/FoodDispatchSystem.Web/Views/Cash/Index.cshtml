@@ -1,0 +1,120 @@
+﻿@model FoodDispatchSystem.Web.ViewsModels.CashSummaryViewModel
+
+@{
+    ViewData["Title"] = "Caja";
+}
+
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="mb-1">Resumen de caja</h2>
+            <p class="text-muted mb-0">
+                Cobros registrados durante el período actual.
+            </p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">
+                        Total cobrado
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        $@Model.TotalCollected.ToString("N2")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">
+                        Efectivo
+                    </div>
+
+                    <div class="fs-3 fw-bold text-success">
+                        $@Model.CashTotal.ToString("N2")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">
+                        Tarjeta
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        $@Model.CardTotal.ToString("N2")
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small mb-1">
+                        Cobros registrados
+                    </div>
+
+                    <div class="fs-3 fw-bold">
+                        @Model.PaymentCount
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <h5 class="mb-3">Información del cierre</h5>
+
+            <div class="row g-3">
+
+                <div class="col-md-4">
+                    <div class="text-muted small">
+                        Desde
+                    </div>
+
+                    <strong>
+                        @Model.From.ToString("dd/MM/yyyy HH:mm")
+                    </strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">
+                        Hasta
+                    </div>
+
+                    <strong>
+                        @Model.To.ToString("dd/MM/yyyy HH:mm")
+                    </strong>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="text-muted small">
+                        Usuario
+                    </div>
+
+                    <strong>
+                        @(Model.CashierEmail ?? "No disponible")
+                    </strong>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
